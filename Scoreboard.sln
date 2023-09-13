@@ -5,6 +5,10 @@ VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scoreboard.Api", "Scoreboard.Api\Scoreboard.Api.csproj", "{01880B83-887A-4294-A1A3-3DD4C90E9191}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scoreboard.Service", "Scoreboard.Service\Scoreboard.Service.csproj", "{984E5B40-4435-44DF-BFA3-7ECE58EFD1BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scoreboard.Contracts", "Scoreboard.Contracts\Scoreboard.Contracts.csproj", "{DA0D3850-9C92-4EAA-A792-07A26A7550A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{01880B83-887A-4294-A1A3-3DD4C90E9191}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01880B83-887A-4294-A1A3-3DD4C90E9191}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01880B83-887A-4294-A1A3-3DD4C90E9191}.Release|Any CPU.Build.0 = Release|Any CPU
+		{984E5B40-4435-44DF-BFA3-7ECE58EFD1BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{984E5B40-4435-44DF-BFA3-7ECE58EFD1BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{984E5B40-4435-44DF-BFA3-7ECE58EFD1BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{984E5B40-4435-44DF-BFA3-7ECE58EFD1BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA0D3850-9C92-4EAA-A792-07A26A7550A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA0D3850-9C92-4EAA-A792-07A26A7550A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA0D3850-9C92-4EAA-A792-07A26A7550A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA0D3850-9C92-4EAA-A792-07A26A7550A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
