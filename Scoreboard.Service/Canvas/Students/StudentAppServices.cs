@@ -1,11 +1,13 @@
-﻿
-
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Scoreboard.Data.Context;
+using Scoreboard.Contracts.Canvas.ResponseDto;
 using Scoreboard.Domain.Models;
+using Scoreboard.Repository.Assessments;
+using Scoreboard.Repository.Courses;
+using Scoreboard.Repository.StudentAssessments;
 using Scoreboard.Repository.Students;
+using Scoreboard.Repository.StudentTotalPoints;
 using System.Net.Http.Headers;
 
 namespace Scoreboard.Service.Canvas.Students
@@ -16,103 +18,122 @@ namespace Scoreboard.Service.Canvas.Students
         private readonly ILogger<StudentAppServices> _logger;
         private readonly string _canvasApiUrl;
         private readonly string _canvasApiToken;
-        private readonly StudentRepository _studentRepository;
+        private readonly IStudentRepository _studentRepository;
+        private readonly ICourseRepository _courseRepository;
+        private readonly IAssessmentRepository _assessmentRepository;
+        public readonly IStudentAssessmentRepository _studentAssessmentRepository;
+        public readonly IStudentTotalPointRepository _studentTotalPointRepository;
+
+
         private readonly HttpClient client = new HttpClient();
 
-        public StudentAppServices(IConfiguration configuration, ILogger<StudentAppServices> logger, StudentRepository studentRepository)
+        public StudentAppServices(
+            IConfiguration configuration, 
+            ILogger<StudentAppServices> logger, 
+            IStudentRepository studentRepository, 
+            ICourseRepository courseRepository,
+            IStudentAssessmentRepository studentAssessmentRepository,
+            IAssessmentRepository assessmentRepository,
+            IStudentTotalPointRepository studentTotalPointRepository
+            )
         {
             _logger = logger;
             _configuration = configuration;
             _canvasApiUrl = _configuration["Canvas:ApiUrl"]!;
             _canvasApiToken = _configuration["Canvas:ApiKey"]!;
             _studentRepository = studentRepository;
+            _courseRepository = courseRepository;
+            _studentAssessmentRepository = studentAssessmentRepository;
+            _assessmentRepository = assessmentRepository;
+            _studentTotalPointRepository = studentTotalPointRepository;
         }
 
-        //public async Task<Student> CreateStudentAsync(int userId)
-        //{
-        //    // Initialize the student with a default StreamId.
-        //    var student = new Student();
+        public async Task<Student> CreateStudentAsync(int studentId)
+        {
 
-        //    // Fetch user information asynchronously.
-        //    var userResponse = await GetCanvasApiResponseAsync($"users/{userId}");
+            // Fetch user information asynchronously.
+            var userResponse = await GetCanvasApiResponseAsync($"users/{studentId}");
 
-        //    if (userResponse == null || !userResponse.IsSuccessStatusCode)
-        //    {
-        //        string message = $"Error getting user {userId} from Canvas API: {(userResponse != null ? userResponse.StatusCode.ToString() : "Unknown")}";
-        //        _logger.LogError(message);
-        //        return null;
-        //    }
+            if (userResponse == null || !userResponse.IsSuccessStatusCode)
+            {
+                string message = $"Error getting user {studentId} from Canvas API: {(userResponse != null ? userResponse.StatusCode.ToString() : "Unknown")}";
+                _logger.LogError(message);
+                return null;
+            }
 
-        //    var userContent = await userResponse.Content.ReadAsStringAsync();
-        //    student = JsonConvert.DeserializeObject<Student>(userContent);
+            var userContent = await userResponse.Content.ReadAsStringAsync();
+            var student = JsonConvert.DeserializeObject<Student>(userContent);
 
-        //    if (student != null)
-        //    {
-        //        student.StreamId = 1;
-        //        // Fetch courses asynchronously.
-        //        student.Courses = await GetCoursesAsync(student.Id);
+            if (student != null)
+            {
+                student.StreamId = 1;
+                await _studentRepository.AddStudentAsync(student);
+                var courseApiResponse = await GetCoursesAsync(student.Id);
+                await _courseRepository.AddCourseListAsync(courseApiResponse.Select(c => new Course { Id = c.Id, Name = c.Name }).ToList());
+                await _studentAssessmentRepository.DeleteAllStudentAssissmentRecordAsync(student.Id);
+                foreach (var course in courseApiResponse)
+                {
+                    // Fetch assignments asynchronously.
+                    var assessments = await GetAssessmentsAsync(course.Id, student.Id);
+                    await _assessmentRepository.AddAssessmentListAsync(assessments.Select(a => new Assessment { Id = a.Id, Name = a.Name, Point = a.Points_possible, CourseId = a.Course_id }).ToList());
 
-        //        foreach (var course in student.Courses)
-        //        {
-        //            // Fetch assignments asynchronously.
-        //            course.Assessments = await GetAssignmentsAsync(course.Id, student.Id);
+                    // Fetch grades for each assignment asynchronously.
+                    foreach (var assignment in assessments)
+                    {
+                        var studentAssissment = await GetAssessmentGradeAsync(course.Id, assignment.Id, student.Id);
+                        await _studentAssessmentRepository.AddStudentAssessmentAsync(new StudentAssessment {Id = assignment.Id, AssessmentId = assignment.Id, StudentId = student.Id, AchievedPoints = studentAssissment.Score});
+                    }
+                }
+                await _studentTotalPointRepository.AddStudentTotalPointAsync(student.Id);
+            }
 
-        //            // Fetch grades for each assignment asynchronously.
-        //            foreach (var assignment in course.Assessments)
-        //            {
-        //                var grade = await GetAssignmentGradeAsync(course.Id, assignment.Id, student.Id);
-        //                assignment.Score = grade;
-        //            }
-        //        }
-        //    }
+            return student;
+        }
 
-        //    return student;
-        //}
+        private async Task<HttpResponseMessage> GetCanvasApiResponseAsync(string endpoint)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _canvasApiToken);
+            return await client.GetAsync($"{_canvasApiUrl}/{endpoint}");
+        }
 
-        //private async Task<HttpResponseMessage> GetCanvasApiResponseAsync(string endpoint)
-        //{
-        //    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _canvasApiToken);
-        //    return await client.GetAsync($"{_canvasApiUrl}/{endpoint}");
-        //}
+        private async Task<List<CourseApiResponseDto>> GetCoursesAsync(int userId)
+        {
+            var courseResponse = await GetCanvasApiResponseAsync($"users/{userId}/courses");
 
-        //private async Task<List<Course>> GetCoursesAsync(int userId)
-        //{
-        //    var courseResponse = await GetCanvasApiResponseAsync($"users/{userId}/courses");
+            if (courseResponse != null && courseResponse.IsSuccessStatusCode)
+            {
+                var courseContent = await courseResponse.Content.ReadAsStringAsync();
+                var courseApiResponse = JsonConvert.DeserializeObject<List<CourseApiResponseDto>>(courseContent);
+                return courseApiResponse;
+            }
 
-        //    if (courseResponse != null && courseResponse.IsSuccessStatusCode)
-        //    {
-        //        var courseContent = await courseResponse.Content.ReadAsStringAsync();
-        //        return JsonConvert.DeserializeObject<List<Course>>(courseContent);
-        //    }
+            return new List<CourseApiResponseDto>();
+        }
 
-        //    return new List<Course>();
-        //}
+        private async Task<List<AssessmentApiResponseDto>> GetAssessmentsAsync(int courseId, int studentId)
+        {
+            var assignmentResponse = await GetCanvasApiResponseAsync($"courses/{courseId}/assignments");
 
-        //private async Task<List<Assessment>> GetAssignmentsAsync(int courseId, int studentId)
-        //{
-        //    var assignmentResponse = await GetCanvasApiResponseAsync($"courses/{courseId}/assignments");
+            if (assignmentResponse != null && assignmentResponse.IsSuccessStatusCode)
+            {
+                var assignmentContent = await assignmentResponse.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<AssessmentApiResponseDto>>(assignmentContent);
+            }
 
-        //    if (assignmentResponse != null && assignmentResponse.IsSuccessStatusCode)
-        //    {
-        //        var assignmentContent = await assignmentResponse.Content.ReadAsStringAsync();
-        //        return JsonConvert.DeserializeObject<List<Assessment>>(assignmentContent);
-        //    }
+            return new List<AssessmentApiResponseDto>();
+        }
 
-        //    return new List<Assessment>();
-        //}
+        private async Task<StudentAssessmentApiResponseDto> GetAssessmentGradeAsync(int courseId, int assignmentId, int studentId)
+        {
+            var gradeResponse = await GetCanvasApiResponseAsync($"courses/{courseId}/assignments/{assignmentId}/submissions/{studentId}");
 
-        //private async Task<float?> GetAssignmentGradeAsync(int courseId, int assignmentId, int studentId)
-        //{
-        //    var gradeResponse = await GetCanvasApiResponseAsync($"courses/{courseId}/assignments/{assignmentId}/submissions/{studentId}");
-
-        //    if (gradeResponse != null && gradeResponse.IsSuccessStatusCode)
-        //    {
-        //        var gradeContent = await gradeResponse.Content.ReadAsStringAsync();
-        //        var grade = JsonConvert.DeserializeObject<Grades>(gradeContent);
-        //        return grade.score;
-        //    }
-        //    return null;
-        //}
+            if (gradeResponse != null && gradeResponse.IsSuccessStatusCode)
+            {
+                var gradeContent = await gradeResponse.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<StudentAssessmentApiResponseDto>(gradeContent);
+            }
+            return null;
+        }
 
     }
 }

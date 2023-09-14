@@ -20,10 +20,13 @@ namespace Scoreboard.Service.Canvas.Courses
         private readonly ILogger<CourseAppServices> _logger;
         private readonly string _canvasApiUrl;
         private readonly string _canvasApiToken;
-        private readonly CourseRepository _courseRepository;
+        private readonly ICourseRepository _courseRepository;
 
-        public CourseAppServices(IConfiguration configuration, ILogger<CourseAppServices> logger, CourseRepository courseRepository)
-        {
+        public CourseAppServices(
+            IConfiguration configuration, 
+            ILogger<CourseAppServices> logger, 
+            ICourseRepository courseRepository
+            ){
             _logger = logger;
             _configuration = configuration;
             _canvasApiUrl = _configuration["Canvas:ApiUrl"]!;

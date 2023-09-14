@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Scoreboard.Repository.Courses
 {
-    public class CourseRepository
+    public class CourseRepository : ICourseRepository
     {
         private readonly ScoreboardDbContext _context;
 
@@ -34,7 +34,14 @@ namespace Scoreboard.Repository.Courses
         }
         public async Task<List<Course>> AddCourseListAsync(List<Course> courses)
         {
-            _context.Courses.AddRange(courses);
+            foreach (var item in courses)
+            {
+                var course = _context.Courses.FirstOrDefault(c => c.Id == item.Id);
+                if (course == null)
+                {
+                    _context.Courses.Add(item);
+                }
+            }
             await _context.SaveChangesAsync();
             return courses;
         }

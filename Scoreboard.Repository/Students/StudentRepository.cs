@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Scoreboard.Repository.Students
 {
-    public class StudentRepository
+    public class StudentRepository : IStudentRepository
     {
         private readonly ScoreboardDbContext _context;
 
@@ -30,9 +30,22 @@ namespace Scoreboard.Repository.Students
                 Id = s.Id,
                 Name = s.Name,
                 Stream = s.Stream,
-                StudentAssessments = s.StudentAssessments
+                StudentAssessments = s.StudentAssessments,
+                StudentTotalPoint = s.StudentTotalPoint
             }).FirstOrDefaultAsync(s => s.Id == id);
             return student;
+        }
+        public async Task<List<GetStudentDto>> GetStudentsDetails()
+        {
+            var students = await _context.Students.Include(s => s.Stream).Include(a => a.StudentAssessments).Include(a => a.StudentTotalPoint).Select(s => new GetStudentDto
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Stream = s.Stream,
+                StudentAssessments = s.StudentAssessments,
+                StudentTotalPoint = s.StudentTotalPoint
+            }).ToListAsync();
+            return students;
         }
         public async Task<List<Student>> GetStudentsAsync()
         {
@@ -40,9 +53,14 @@ namespace Scoreboard.Repository.Students
         }
         public async Task<Student> AddStudentAsync(Student student)
         {
-            _context.Students.Add(student);
+            var result = _context.Students.FirstOrDefault(s => s.Id == student.Id);
+            if (result == null)
+            {
+                _context.Students.Add(student);
+            }
             await _context.SaveChangesAsync();
             return student;
+
         }
         public async Task<Student> UpdateStudentAsync(Student student)
         {

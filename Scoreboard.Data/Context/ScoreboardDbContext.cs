@@ -44,11 +44,12 @@ public class ScoreboardDbContext : DbContext
             b.HasOne(s => s.Student)
                 .WithOne(s => s.StudentTotalPoint)
                 .HasForeignKey<StudentTotalPoint>(s => s.StudentId)
-                .OnDelete(DeleteBehavior.Cascade).IsRequired();
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         builder.Entity<Course>(b =>
         {
+            
             b.HasMany(c => c.Streams)
                 .WithOne(c => c.Course)
                 .HasForeignKey(c => c.CourseId)

@@ -11,9 +11,9 @@ namespace Scoreboard.Domain.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public float Point { get; set; }
+        public float? Point { get; set; }
         public int CourseId { get; set; }
-        public Course Course { get; set; }
-        public List<StudentAssessment> Students { get; set; }
+        public Course? Course { get; set; }
+        public List<StudentAssessment>? Students { get; set; }
     }
 }

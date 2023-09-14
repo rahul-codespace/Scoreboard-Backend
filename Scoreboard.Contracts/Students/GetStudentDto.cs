@@ -9,7 +9,7 @@ namespace Scoreboard.Contracts.Students
         public int Id { get; set; }
         public string Name { get; set; }
         public Domain.Models.Stream Stream { get; set; }
-        public List<Course> courses { get; set; }
         public List<StudentAssessment>? StudentAssessments { get; set; }
+        public StudentTotalPoint? StudentTotalPoint { get; set; }
     }
 }

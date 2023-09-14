@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Scoreboard.Data;
 using Scoreboard.Data.Context;
+using Scoreboard.Repository.Assessments;
+using Scoreboard.Repository.Courses;
+using Scoreboard.Repository.StudentAssessments;
 using Scoreboard.Repository.Students;
+using Scoreboard.Repository.StudentTotalPoints;
 using Scoreboard.Service.Canvas;
 using Scoreboard.Service.Canvas.Students;
 
@@ -16,9 +19,13 @@ var _configuration = builder.Configuration;
 builder.Services.AddDbContext<ScoreboardDbContext>(options =>
         options.UseNpgsql(_configuration.GetConnectionString("AppDbContext") ?? throw new InvalidOperationException("Connection string AppDbContext not found.")
     ));
-builder.Services.AddScoped<StudentRepository>();
 builder.Services.AddScoped<CanvasAppServices>();
 builder.Services.AddScoped<StudentAppServices>();
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<IAssessmentRepository, AssessmentRepository>();
+builder.Services.AddScoped<IStudentAssessmentRepository, StudentAssessmentRepository>();
+builder.Services.AddScoped<IStudentTotalPointRepository, StudentTotalPointRepository>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

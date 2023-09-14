@@ -10,6 +10,6 @@ public class Course
 {
     public int Id { get; set; }
     public string Name { get; set; }
-    public List<StreamCourses> Streams { get; set; }
-    public List<Assessment> Assessments { get; set; }
+    public List<StreamCourses>? Streams { get; set; }
+    public List<Assessment>? Assessments { get; set; }
 }
