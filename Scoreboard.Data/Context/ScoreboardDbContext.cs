@@ -53,7 +53,7 @@ public class ScoreboardDbContext : DbContext
                 .WithOne(c => c.Course)
                 .HasForeignKey(c => c.CourseId)
                 .OnDelete(DeleteBehavior.Cascade);
-            b.HasMany(b => b.Assesments)
+            b.HasMany(b => b.Assessments)
                 .WithOne(b => b.Course)
                 .HasForeignKey(b => b.CourseId)
                 .OnDelete(DeleteBehavior.Cascade);

@@ -30,59 +30,89 @@ namespace Scoreboard.Service.Canvas.Students
 
         public async Task<Student> CreateStudentAsync(int userId)
         {
-            var courses = new List<Course>();
-            var assigments = new List<Assessment>();
-    
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _canvasApiToken);
-            var response = await client.GetAsync($"{_canvasApiUrl}/users/{userId}");
+            // Initialize the student with a default StreamId.
+            var student = new Student();
 
-            if (response.IsSuccessStatusCode)
+            // Fetch user information asynchronously.
+            var userResponse = await GetCanvasApiResponseAsync($"users/{userId}");
+
+            if (userResponse == null || !userResponse.IsSuccessStatusCode)
             {
-                var content = await response.Content.ReadAsStringAsync();
-                var student = JsonConvert.DeserializeObject<Student>(content);
-                
-                if (student != null)
-                {
-                    student.StreamId = 1;
-                    var courseResponse = await client.GetAsync($"{_canvasApiUrl}/users/{student.Id}/courses");
-                    if(courseResponse.IsSuccessStatusCode)
-                    {
-                        var courseContent = await courseResponse.Content.ReadAsStringAsync();
-                        courses = JsonConvert.DeserializeObject<List<Course>>(courseContent);
-                        if(courses != null)
-                        {
-                            foreach(var course in courses)
-                            {
-                                var assigmentResponse = await client.GetAsync($"{_canvasApiUrl}/courses/{course.Id}/assignments");
-                                if(assigmentResponse.IsSuccessStatusCode)
-                                {
-                                    var assigmentContent = await assigmentResponse.Content.ReadAsStringAsync();
-                                    assigments = JsonConvert.DeserializeObject<List<Assessment>>(assigmentContent);
-                                    foreach (var assignment in assigments)
-                                    {
-                                        var greadResponse = await client.GetAsync($"{_canvasApiUrl}/courses/{course.Id}/assignments/{assignment.Id}/submissions/{student.Id}");
-                                        if (greadResponse.IsSuccessStatusCode)
-                                        {
-                                            var greadContent = await greadResponse.Content.ReadAsStringAsync();
-                                            var gread = JsonConvert.DeserializeObject<Grades>(greadContent);
-                                            assignment.score = gread.score;
-                                        }
-                                    }
-                                    course.Assesments = assigments;
-                                }
-                            }
-                            student.Courses = courses;
-                        }
-                    }
-                }
-                return student;
-            }
-            else
-            {
-                string message = $"Error getting user {userId} from Canvas API: {response.StatusCode}";
+                string message = $"Error getting user {userId} from Canvas API: {(userResponse != null ? userResponse.StatusCode.ToString() : "Unknown")}";
                 _logger.LogError(message);
                 return null;
             }
+
+            var userContent = await userResponse.Content.ReadAsStringAsync();
+            student = JsonConvert.DeserializeObject<Student>(userContent);
+
+            if (student != null)
+            {
+                student.StreamId = 1;
+                // Fetch courses asynchronously.
+                student.Courses = await GetCoursesAsync(student.Id);
+
+                foreach (var course in student.Courses)
+                {
+                    // Fetch assignments asynchronously.
+                    course.Assessments = await GetAssignmentsAsync(course.Id, student.Id);
+
+                    // Fetch grades for each assignment asynchronously.
+                    foreach (var assignment in course.Assessments)
+                    {
+                        var grade = await GetAssignmentGradeAsync(course.Id, assignment.Id, student.Id);
+                        assignment.Score = grade;
+                    }
+                }
+            }
+
+            return student;
         }
+
+        private async Task<HttpResponseMessage> GetCanvasApiResponseAsync(string endpoint)
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _canvasApiToken);
+            return await client.GetAsync($"{_canvasApiUrl}/{endpoint}");
+        }
+
+        private async Task<List<Course>> GetCoursesAsync(int userId)
+        {
+            var courseResponse = await GetCanvasApiResponseAsync($"users/{userId}/courses");
+
+            if (courseResponse != null && courseResponse.IsSuccessStatusCode)
+            {
+                var courseContent = await courseResponse.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<Course>>(courseContent);
+            }
+
+            return new List<Course>();
+        }
+
+        private async Task<List<Assessment>> GetAssignmentsAsync(int courseId, int studentId)
+        {
+            var assignmentResponse = await GetCanvasApiResponseAsync($"courses/{courseId}/assignments");
+
+            if (assignmentResponse != null && assignmentResponse.IsSuccessStatusCode)
+            {
+                var assignmentContent = await assignmentResponse.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<Assessment>>(assignmentContent);
+            }
+
+            return new List<Assessment>();
+        }
+
+        private async Task<float?> GetAssignmentGradeAsync(int courseId, int assignmentId, int studentId)
+        {
+            var gradeResponse = await GetCanvasApiResponseAsync($"courses/{courseId}/assignments/{assignmentId}/submissions/{studentId}");
+
+            if (gradeResponse != null && gradeResponse.IsSuccessStatusCode)
+            {
+                var gradeContent = await gradeResponse.Content.ReadAsStringAsync();
+                var grade = JsonConvert.DeserializeObject<Grades>(gradeContent);
+                return grade.score;
+            }
+            return null;
+        }
+
     }
 }
