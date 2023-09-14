@@ -14,6 +14,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Scoreboard.Contracts\Scoreboard.Contracts.csproj" />
+    <ProjectReference Include="..\Scoreboard.Data\Scoreboard.Data.csproj" />
+    <ProjectReference Include="..\Scoreboard.Domain\Scoreboard.Domain.csproj" />
+    <ProjectReference Include="..\Scoreboard.Repository\Scoreboard.Repository.csproj" />
   </ItemGroup>
 
 </Project>

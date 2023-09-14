@@ -8,49 +8,50 @@ namespace Scoreboard.Contracts.Canvas.Dtos;
 
 public class CanvasCourseResponseDto
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public int AccountId { get; set; }
-    public string Uuid { get; set; }
-    public DateTime StartAt { get; set; }
-    public int? GradingStandardId { get; set; }
-    public bool? IsPublic { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public string CourseCode { get; set; }
-    public string DefaultView { get; set; }
-    public int RootAccountId { get; set; }
-    public int EnrollmentTermId { get; set; }
-    public string License { get; set; }
-    public string GradePassbackSetting { get; set; }
-    public DateTime? EndAt { get; set; }
-    public bool PublicSyllabus { get; set; }
-    public bool PublicSyllabusToAuth { get; set; }
-    public int StorageQuotaMb { get; set; }
-    public bool IsPublicToAuthUsers { get; set; }
-    public bool HideFinalGrades { get; set; }
-    public bool ApplyAssignmentGroupWeights { get; set; }
-    public CanvasCalendar Calendar { get; set; }
-    public string TimeZone { get; set; }
-    public bool Blueprint { get; set; }
-    public string SisCourseId { get; set; }
-    public string SisImportId { get; set; }
-    public string IntegrationId { get; set; }
-    public List<CanvasEnrollment> Enrollments { get; set; }
-    public string WorkflowState { get; set; }
-    public bool RestrictEnrollmentsToCourseDates { get; set; }
+    public int id { get; set; }
+    public string? name { get; set; }
+    public int account_id { get; set; }
+    public string? uuid { get; set; }
+    public DateTime start_at { get; set; }
+    public int? grading_standard_id { get; set; }
+    public bool? is_public { get; set; }
+    public DateTime created_at { get; set; }
+    public string? course_code { get; set; }
+    public string? default_view { get; set; }
+    public int root_account_id { get; set; }
+    public int enrollment_term_id { get; set; }
+    public string? license { get; set; }
+    public string? grade_passback_setting { get; set; }
+    public DateTime? end_at { get; set; }
+    public bool public_syllabus { get; set; }
+    public bool public_syllabus_to_auth { get; set; }
+    public int storage_quota_mb { get; set; }
+    public bool is_public_to_auth_users { get; set; }
+    public bool apply_assignment_group_weights { get; set; }
+    public CanvasCalendar? calendar { get; set; }
+    public string? time_zone { get; set; }
+    public bool blueprint { get; set; }
+    public string? sis_course_id { get; set; }
+    public string? sis_import_id { get; set; }
+    public string? integration_id { get; set; }
+    public List<CanvasEnrollment> enrollments { get; set; }
+    public bool hide_final_grades { get; set; }
+    public string? workflow_state { get; set; }
+    public bool restrict_enrollments_to_course_dates { get; set; }
+    public string? overridden_course_visibility { get; set; }
 }
 
 public class CanvasCalendar
 {
-    public string Ics { get; set; }
+    public string? ics { get; set; }
 }
 
 public class CanvasEnrollment
 {
-    public string Type { get; set; }
-    public string Role { get; set; }
-    public int RoleId { get; set; }
-    public int UserId { get; set; }
-    public string EnrollmentState { get; set; }
-    public bool LimitPrivilegesToCourseSection { get; set; }
+    public string? type { get; set; }
+    public string? role { get; set; }
+    public int role_id { get; set; }
+    public int user_id { get; set; }
+    public string? enrollment_state { get; set; }
+    public bool limit_privileges_to_course_section { get; set; }
 }
