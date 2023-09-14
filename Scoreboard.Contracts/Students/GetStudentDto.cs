@@ -10,6 +10,6 @@ namespace Scoreboard.Contracts.Students
         public string Name { get; set; }
         public Domain.Models.Stream Stream { get; set; }
         public List<Course> courses { get; set; }
-        public List<StudentAssesment>? StudentAssesments { get; set; }
+        public List<StudentAssessment>? StudentAssessments { get; set; }
     }
 }

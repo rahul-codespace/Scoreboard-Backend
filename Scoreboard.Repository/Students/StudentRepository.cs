@@ -25,12 +25,12 @@ namespace Scoreboard.Repository.Students
         }
         public async Task<GetStudentDto> GetStudentDetails(int id)
         {
-            var student= await _context.Students.Include(s => s.Stream).Include(a => a.StudentAssesments).Include(a=> a.StudentTotalPoint).Select(s => new GetStudentDto
+            var student= await _context.Students.Include(s => s.Stream).Include(a => a.StudentAssessments).Include(a=> a.StudentTotalPoint).Select(s => new GetStudentDto
             {
                 Id = s.Id,
                 Name = s.Name,
                 Stream = s.Stream,
-                StudentAssesments = s.StudentAssesments
+                StudentAssessments = s.StudentAssessments
             }).FirstOrDefaultAsync(s => s.Id == id);
             return student;
         }

@@ -10,7 +10,7 @@ public class ScoreboardDbContext : DbContext
     public DbSet<Course> Courses { get; set; }
     public DbSet<StreamCourses> StreamCourses { get; set; }
     public DbSet<Assessment> Assessments { get; set; }
-    public DbSet<StudentAssesment> StudentAssesments { get; set; }
+    public DbSet<StudentAssessment> StudentAssesments { get; set; }
     public DbSet<StudentTotalPoint> StudentTotalPoints { get; set; }
 
     public ScoreboardDbContext(DbContextOptions<ScoreboardDbContext> options): base(options) { 
@@ -34,7 +34,7 @@ public class ScoreboardDbContext : DbContext
             b.HasKey(sc => new { sc.StreamId, sc.CourseId });
         });
 
-        builder.Entity<StudentAssesment>(b =>
+        builder.Entity<StudentAssessment>(b =>
         {
             b.HasKey(sa => new { sa.StudentId, sa.AssessmentId });
         });
@@ -53,7 +53,7 @@ public class ScoreboardDbContext : DbContext
                 .WithOne(c => c.Course)
                 .HasForeignKey(c => c.CourseId)
                 .OnDelete(DeleteBehavior.Cascade);
-            b.HasMany(b => b.Assesments)
+            b.HasMany(b => b.Assessments)
                 .WithOne(b => b.Course)
                 .HasForeignKey(b => b.CourseId)
                 .OnDelete(DeleteBehavior.Cascade);

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Scoreboard.Domain.Models
 {
-    public class StudentAssesment
+    public class StudentAssessment
     {
         public int Id { get; set; }
         public int StudentId { get; set; }

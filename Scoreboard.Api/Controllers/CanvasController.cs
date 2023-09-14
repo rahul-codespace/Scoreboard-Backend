@@ -40,14 +40,14 @@ public class CanvasController : ControllerBase
         return Ok(courses);
     }
 
-    [HttpGet("student/{studentId}")]
-    public async Task<ActionResult<Student>> GetStudentAsync(int studentId)
-    {
-        var student = await _studentAppServices.CreateStudentAsync(studentId);
-        if (student == null)
-        {
-            return BadRequest($"User {studentId} not found");
-        }
-        return Ok(student);
-    }
+    //[HttpGet("student/{studentId}")]
+    //public async Task<ActionResult<Student>> GetStudentAsync(int studentId)
+    //{
+    //    var student = await _studentAppServices.CreateStudentAsync(studentId);
+    //    if (student == null)
+    //    {
+    //        return BadRequest($"User {studentId} not found");
+    //    }
+    //    return Ok(student);
+    //}
 }
