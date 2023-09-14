@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Scoreboard.Contracts.Canvas.Dtos;
+using Scoreboard.Domain.Models;
 using Scoreboard.Service.Canvas;
+using Scoreboard.Service.Canvas.Students;
 
 namespace Scoreboard.Api.Controllers;
 
@@ -9,9 +11,11 @@ namespace Scoreboard.Api.Controllers;
 public class CanvasController : ControllerBase
 {
     private readonly CanvasAppServices _canvasAppServices;
-    public CanvasController(CanvasAppServices canvasAppServices)
+    private readonly StudentAppServices _studentAppServices;
+    public CanvasController(CanvasAppServices canvasAppServices, StudentAppServices studentAppServices)
     {
         _canvasAppServices = canvasAppServices;
+        _studentAppServices = studentAppServices;
     }
 
     [HttpGet("courses/{courseId}")]
@@ -25,4 +29,25 @@ public class CanvasController : ControllerBase
         return Ok(course);
     }
 
+    [HttpGet("users/{userId}/courses")]
+    public async Task<ActionResult<List<CanvasCourseResponseDto>>> GetCoursesForUserAsync(int userId)
+    {
+        var courses = await _canvasAppServices.GetCoursesForUserAsync(userId);
+        if (courses == null)
+        {
+            return BadRequest($"Courses for user {userId} not found");
+        }
+        return Ok(courses);
+    }
+
+    [HttpGet("student/{studentId}")]
+    public async Task<ActionResult<Student>> GetStudentAsync(int studentId)
+    {
+        var student = await _studentAppServices.CreateStudentAsync(studentId);
+        if (student == null)
+        {
+            return BadRequest($"User {studentId} not found");
+        }
+        return Ok(student);
+    }
 }

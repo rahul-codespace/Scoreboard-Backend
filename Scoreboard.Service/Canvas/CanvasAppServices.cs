@@ -40,4 +40,24 @@ public class CanvasAppServices
             return null;
         }
     }
+
+    public async Task<List<CanvasCourseResponseDto>> GetCoursesForUserAsync(int userId)
+    {
+        var client = new HttpClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _canvasApiToken);
+        var response = await client.GetAsync($"{_canvasApiUrl}/users/{userId}/courses");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            var courses = JsonConvert.DeserializeObject<List<CanvasCourseResponseDto>>(content);
+            return courses;
+        }
+        else
+        {
+            string message = $"Error getting courses for user {userId} from Canvas API: {response.StatusCode}";
+            _logger.LogError(message);
+            return null;
+        }
+    }
 }
