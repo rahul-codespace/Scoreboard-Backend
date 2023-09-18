@@ -14,5 +14,6 @@ namespace Scoreboard.Domain.Models
         public float TotalPoints { get; set; }
         public float TotalAchievedPoints { get; set; }
         public float PercentageScore { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

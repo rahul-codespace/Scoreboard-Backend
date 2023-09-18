@@ -12,4 +12,5 @@ public class Course
     public string Name { get; set; }
     public List<StreamCourses>? Streams { get; set; }
     public List<Assessment>? Assessments { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
 }

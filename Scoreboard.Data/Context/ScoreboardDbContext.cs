@@ -13,8 +13,9 @@ public class ScoreboardDbContext : DbContext
     public DbSet<StudentAssessment> StudentAssesments { get; set; }
     public DbSet<StudentTotalPoint> StudentTotalPoints { get; set; }
 
-    public ScoreboardDbContext(DbContextOptions<ScoreboardDbContext> options): base(options) { 
-
+    public ScoreboardDbContext(DbContextOptions<ScoreboardDbContext> options): base(options) {
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
     }
 
     protected override void OnModelCreating(ModelBuilder builder)

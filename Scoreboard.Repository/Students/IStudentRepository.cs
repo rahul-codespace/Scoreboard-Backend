@@ -11,5 +11,6 @@ namespace Scoreboard.Repository.Students
         Task<List<Student>> GetStudentsAsync();
         Task<Student> AddStudentAsync(Student student);
         Task<Student?> DeleteStudentAsync(int id);
+        Task<Student?> UpdateStudentAsync(Student student);
     }
 }

@@ -7,29 +7,27 @@ using Scoreboard.Repository.Students;
 namespace Scoreboard.Api.Controllers.Students
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller][Action]")]
     public class StudentController : ControllerBase
     {
-        private readonly StudentRepository _studentRepository;
+        private readonly IStudentRepository _studentRepository;
 
-        public StudentController(StudentRepository studentRepository)
+        public StudentController(IStudentRepository studentRepository)
         {
             _studentRepository = studentRepository;
         }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Student>> GetStudentAsync(int id)
+        [HttpGet]
+        public async Task<ActionResult<List<GetStudentDto>>> GetStudentsAsync()
         {
-            var student = await _studentRepository.GetStudentAsync(id);
-            if (student == null)
+            var students = await _studentRepository.GetStudentsDetails();
+            if (students == null)
             {
-                return BadRequest($"Student {id} not found");
+                return BadRequest($"Students not found");
             }
-            return Ok(student);
+            return Ok(students);
         }
-
-        [HttpGet("details/{id}")]
-        public async Task<ActionResult<GetStudentDto>> GetStudentDetails(int id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<GetStudentDto>> GetStudentAsync(int id)
         {
             var student = await _studentRepository.GetStudentDetails(id);
             if (student == null)
@@ -38,6 +36,36 @@ namespace Scoreboard.Api.Controllers.Students
             }
             return Ok(student);
         }
-
+        [HttpPost]
+        public async Task<ActionResult<Student>> AddStudentAsync(AddStudentDto input)
+        {
+            var student = new Student{Id = input.Id, Name = input.Name, StreamId = input.StreamId};
+            var result = await _studentRepository.AddStudentAsync(student);
+            if (result == null)
+            {
+                return BadRequest($"Student {student.Id} not found");
+            }
+            return Ok(result);
+        }
+        [HttpPut]
+        public async Task<ActionResult<Student>> UpdateStudentAsync(Student student)
+        {
+            var result = await _studentRepository.UpdateStudentAsync(student);
+            if (result == null)
+            {
+                return BadRequest($"Student {student.Id} not found");
+            }
+            return Ok(result);
+        }
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Student>> DeleteStudentAsync(int id)
+        {
+            var result = await _studentRepository.DeleteStudentAsync(id);
+            if (result == null)
+            {
+                return BadRequest($"Student {id} not found");
+            }
+            return Ok(result);
+        }
     }
 }

@@ -18,11 +18,16 @@ namespace Scoreboard.Data
                 {
                     context.Streams.AddRange(new List<Domain.Models.Stream>() {
 
-                        new Domain.Models.Stream() {Name = "Backend (asp.net)"},
-                        new Domain.Models.Stream() {Name = "Frontend (Angular)"},
+                        new Domain.Models.Stream() {Name = "Backend (BE) - .NET"},
+                        new Domain.Models.Stream() {Name = "Frontend (FE) - Angular"},
+                        new Domain.Models.Stream() {Name = "Frontend (FE) - React"},
+                        new Domain.Models.Stream() {Name = "Backend (BE) – Node"},
+                        new Domain.Models.Stream() {Name = "Mobile - iOS (Flutter)"},
+                        new Domain.Models.Stream() {Name = "Mobile - iOS"},
                     });
                     context.SaveChanges();
                 }
+
             }
         }
     }
