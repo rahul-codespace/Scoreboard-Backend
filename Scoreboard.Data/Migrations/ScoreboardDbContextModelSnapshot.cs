@@ -151,9 +151,6 @@ namespace Scoreboard.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("integer");
-
                     b.HasKey("StudentId", "AssessmentId");
 
                     b.HasIndex("AssessmentId");
@@ -172,16 +169,16 @@ namespace Scoreboard.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<float>("PercentageScore")
+                    b.Property<float?>("PercentageScore")
                         .HasColumnType("real");
 
                     b.Property<int>("StudentId")
                         .HasColumnType("integer");
 
-                    b.Property<float>("TotalAchievedPoints")
+                    b.Property<float?>("TotalAchievedPoints")
                         .HasColumnType("real");
 
-                    b.Property<float>("TotalPoints")
+                    b.Property<float?>("TotalPoints")
                         .HasColumnType("real");
 
                     b.HasKey("Id");

@@ -11,5 +11,6 @@ namespace Scoreboard.Repository.StudentAssessments
     {
         Task<StudentAssessment> AddStudentAssessmentAsync(StudentAssessment studentAssessments);
         Task DeleteAllStudentAssissmentRecordAsync(int studentId);
+        Task<List<StudentAssessment>> AddStudentAssessmentsAsync(List<StudentAssessment> studentAssessments);
     }
 }

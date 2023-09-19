@@ -46,6 +46,10 @@ public class StudentRepository : IStudentRepository
     {
         return await _context.Students.ToListAsync();
     }
+    public async Task<List<int>> GetStudentsIds()
+    {
+        return await _context.Students.Select(s => s.Id).ToListAsync();
+    }
     public async Task<Student> AddStudentAsync(Student student)
     {
         var result = _context.Students.FirstOrDefault(s => s.Id == student.Id);

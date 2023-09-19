@@ -11,9 +11,9 @@ namespace Scoreboard.Domain.Models
         public int Id { get; set; }
         public int StudentId { get; set; }
         public Student? Student { get; set; }
-        public float TotalPoints { get; set; }
-        public float TotalAchievedPoints { get; set; }
-        public float PercentageScore { get; set; }
+        public float? TotalPoints { get; set; }
+        public float? TotalAchievedPoints { get; set; }
+        public float? PercentageScore { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

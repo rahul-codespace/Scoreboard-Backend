@@ -26,6 +26,23 @@ namespace Scoreboard.Repository.StudentAssessments
             return studentAssessments;
         }
 
+        public async Task<List<StudentAssessment>> AddStudentAssessmentsAsync(List<StudentAssessment> studentAssessments)
+        {
+            if (studentAssessments != null) {
+                foreach (var assessment in studentAssessments)
+                {
+                    var existingAssessment = _context.StudentAssesments.FirstOrDefault(a => assessment.StudentId == a.StudentId && assessment.AssessmentId == a.AssessmentId);
+
+                    if (existingAssessment == null)
+                    {
+                        _context.StudentAssesments.Add(assessment);
+                    }
+                }
+                await _context.SaveChangesAsync();
+            }
+            return studentAssessments;
+        }
+
         public async Task DeleteAllStudentAssissmentRecordAsync(int studentId)
         {
             var studentAssessments = _context.StudentAssesments.Where(a => a.StudentId == studentId);

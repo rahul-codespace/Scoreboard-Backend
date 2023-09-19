@@ -12,8 +12,8 @@ using Scoreboard.Data.Context;
 namespace Scoreboard.Data.Migrations
 {
     [DbContext(typeof(ScoreboardDbContext))]
-    [Migration("20230914130929_Added_Initial_Migration")]
-    partial class Added_Initial_Migration
+    [Migration("20230919115745_Added_All_DataModels")]
+    partial class Added_All_DataModels
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,11 +36,14 @@ namespace Scoreboard.Data.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<float>("Point")
+                    b.Property<float?>("Point")
                         .HasColumnType("real");
 
                     b.HasKey("Id");
@@ -57,6 +60,9 @@ namespace Scoreboard.Data.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -75,6 +81,9 @@ namespace Scoreboard.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -91,6 +100,9 @@ namespace Scoreboard.Data.Migrations
 
                     b.Property<int>("CourseId")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("Id")
                         .HasColumnType("integer");
@@ -109,6 +121,9 @@ namespace Scoreboard.Data.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -133,11 +148,11 @@ namespace Scoreboard.Data.Migrations
                     b.Property<int>("AssessmentId")
                         .HasColumnType("integer");
 
-                    b.Property<float>("AchievedPoints")
+                    b.Property<float?>("AchievedPoints")
                         .HasColumnType("real");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("integer");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("StudentId", "AssessmentId");
 
@@ -154,16 +169,19 @@ namespace Scoreboard.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<float>("PercentageScore")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<float?>("PercentageScore")
                         .HasColumnType("real");
 
                     b.Property<int>("StudentId")
                         .HasColumnType("integer");
 
-                    b.Property<float>("TotalAchievedPoints")
+                    b.Property<float?>("TotalAchievedPoints")
                         .HasColumnType("real");
 
-                    b.Property<float>("TotalPoints")
+                    b.Property<float?>("TotalPoints")
                         .HasColumnType("real");
 
                     b.HasKey("Id");

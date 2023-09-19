@@ -8,7 +8,7 @@ namespace Scoreboard.Contracts.Canvas.ResponseDto
 {
     public class StudentAssessmentApiResponseDto
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public float? Score { get; set; }
     }
 }

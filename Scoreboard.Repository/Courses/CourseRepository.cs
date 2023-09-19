@@ -29,15 +29,18 @@ public class CourseRepository : ICourseRepository
     }
     public async Task<List<Course>> AddCourseListAsync(List<Course> courses)
     {
-        foreach (var item in courses)
+        if (courses != null)
         {
-            var course = _context.Courses.FirstOrDefault(c => c.Id == item.Id);
-            if (course == null)
+            foreach (var item in courses)
             {
-                _context.Courses.Add(item);
+                var course = _context.Courses.FirstOrDefault(c => c.Id == item.Id);
+                if (course == null)
+                {
+                    _context.Courses.Add(item);
+                }
             }
+            await _context.SaveChangesAsync();
         }
-        await _context.SaveChangesAsync();
         return courses;
     }
     public async Task<Course> UpdateCourseAsync(Course course)

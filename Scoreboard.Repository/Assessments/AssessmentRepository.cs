@@ -12,15 +12,18 @@ namespace Scoreboard.Repository.Assessments
         }
         public async Task<List<Assessment>> AddAssessmentListAsync(List<Assessment> assessments)
         {
-            foreach (var item in assessments)
+            if (assessments!=null)
             {
-               var assissment = _context.Assessments.FirstOrDefault(a => a.Id == item.Id);
-                if (assissment == null)
+                foreach (var item in assessments)
                 {
-                    _context.Assessments.Add(item);
+                    var assissment = _context.Assessments.FirstOrDefault(a => a.Id == item.Id);
+                    if (assissment == null)
+                    {
+                        _context.Assessments.Add(item);
+                    }
                 }
+                await _context.SaveChangesAsync();
             }
-            await _context.SaveChangesAsync();
             return assessments;
         }
     }
