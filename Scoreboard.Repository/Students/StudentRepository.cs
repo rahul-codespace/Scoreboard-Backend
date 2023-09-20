@@ -14,6 +14,13 @@ public class StudentRepository : IStudentRepository
         _context = context;
     }
 
+    public async Task RemoveTableDataAsync()
+    {
+        _context.Courses.RemoveRange(_context.Courses);
+        _context.StudentTotalPoints.RemoveRange(_context.StudentTotalPoints);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<Student?> GetStudentAsync(int id)
     {
         return await _context.Students.FirstOrDefaultAsync(s => s.Id == id);

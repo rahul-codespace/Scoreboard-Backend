@@ -19,7 +19,10 @@ namespace Scoreboard.Repository.StudentTotalPoints
             var allPoints = 0.0f;
             foreach (var assissment in allAssisments)
             {
-                allPoints += assissment.Assessment.Point ?? 0.0f;
+                if (assissment.AchievedPoints != null)
+                {
+                    allPoints += assissment.AchievedPoints.Value;
+                }
             }
             var totalPoints = allAssisments.Sum(a => a.AchievedPoints);
             var percentageScore = (totalPoints / allPoints) * 100;
