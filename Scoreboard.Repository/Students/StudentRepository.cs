@@ -49,13 +49,15 @@ public class StudentRepository : IStudentRepository
         }).ToListAsync();
         return students;
     }
-    public async Task<List<Student>> GetStudentsAsync()
+    public async Task<List<StudentDto>> GetStudentsAsync()
     {
-        return await _context.Students.ToListAsync();
-    }
-    public async Task<List<int>> GetStudentsIds()
-    {
-        return await _context.Students.Select(s => s.Id).ToListAsync();
+        var students = await _context.Students.Select(s => new StudentDto
+        {
+            Id = s.Id,
+            Name = s.Name,
+            StreamId = s.StreamId,
+        }).ToListAsync();
+        return students;
     }
     public async Task<Student> AddStudentAsync(Student student)
     {

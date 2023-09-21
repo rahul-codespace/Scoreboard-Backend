@@ -12,7 +12,7 @@ using Scoreboard.Data.Context;
 namespace Scoreboard.Data.Migrations
 {
     [DbContext(typeof(ScoreboardDbContext))]
-    [Migration("20230919115745_Added_All_DataModels")]
+    [Migration("20230920122220_Added_All_DataModels")]
     partial class Added_All_DataModels
     {
         /// <inheritdoc />
@@ -93,7 +93,7 @@ namespace Scoreboard.Data.Migrations
                     b.ToTable("Streams");
                 });
 
-            modelBuilder.Entity("Scoreboard.Domain.Models.StreamCourses", b =>
+            modelBuilder.Entity("Scoreboard.Domain.Models.StreamCourse", b =>
                 {
                     b.Property<int>("StreamId")
                         .HasColumnType("integer");
@@ -103,9 +103,6 @@ namespace Scoreboard.Data.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("integer");
 
                     b.HasKey("StreamId", "CourseId");
 
@@ -203,7 +200,7 @@ namespace Scoreboard.Data.Migrations
                     b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("Scoreboard.Domain.Models.StreamCourses", b =>
+            modelBuilder.Entity("Scoreboard.Domain.Models.StreamCourse", b =>
                 {
                     b.HasOne("Scoreboard.Domain.Models.Course", "Course")
                         .WithMany("Streams")

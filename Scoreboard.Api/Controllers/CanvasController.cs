@@ -14,7 +14,7 @@ public class CanvasController : ControllerBase
     private readonly IStudentAppServices _studentAppServices;
     private readonly IGetStudentDataServices _getStudentDataServices;
     private readonly IStudentRepository _studentRepository;
-    public CanvasController(StudentAppServices studentAppServices, IStudentRepository studentRepository, IGetStudentDataServices getStudentDataServices)
+    public CanvasController(IStudentAppServices studentAppServices, IStudentRepository studentRepository, IGetStudentDataServices getStudentDataServices)
     {
         _getStudentDataServices = getStudentDataServices;
         _studentAppServices = studentAppServices;
@@ -24,9 +24,9 @@ public class CanvasController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Student>> SeedStudentsDataAsync()
     {
-        var studentIds = await _studentRepository.GetStudentsIds();
-        var students = await _getStudentDataServices.SeedStudentsDataAsync(studentIds);
-        var result = await _studentAppServices.SeedStudentDataInDatabaseAsync(students);
+        var students = await _studentRepository.GetStudentsAsync();
+        var studentsData = await _getStudentDataServices.GetStudentsDataFromCanvas(students);
+        var result = await _studentAppServices.SeedStudentDataInDatabaseAsync(studentsData);
         if (result == null)
         {
             return BadRequest($"Students not found");

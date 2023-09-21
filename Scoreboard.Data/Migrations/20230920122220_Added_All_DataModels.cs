@@ -68,7 +68,6 @@ namespace Scoreboard.Data.Migrations
                 {
                     StreamId = table.Column<int>(type: "integer", nullable: false),
                     CourseId = table.Column<int>(type: "integer", nullable: false),
-                    Id = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>

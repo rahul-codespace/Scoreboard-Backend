@@ -8,7 +8,7 @@ public class ScoreboardDbContext : DbContext
     public DbSet<Student> Students { get; set; }
     public DbSet<Domain.Models.Stream> Streams { get; set; }
     public DbSet<Course> Courses { get; set; }
-    public DbSet<StreamCourses> StreamCourses { get; set; }
+    public DbSet<StreamCourse> StreamCourses { get; set; }
     public DbSet<Assessment> Assessments { get; set; }
     public DbSet<StudentAssessment> StudentAssesments { get; set; }
     public DbSet<StudentTotalPoint> StudentTotalPoints { get; set; }
@@ -30,7 +30,7 @@ public class ScoreboardDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade).IsRequired();
         });
 
-        builder.Entity<StreamCourses>(b =>
+        builder.Entity<StreamCourse>(b =>
         {
             b.HasKey(sc => new { sc.StreamId, sc.CourseId });
         });

@@ -29,64 +29,60 @@ namespace Scoreboard.Service.Canvas
             _canvasApiToken = _configuration["Canvas:ApiKey"]!;
         }
 
-        public async Task<List<StudentDto>> SeedStudentsDataAsync(List<int> studentIds)
+        public async Task<List<StudentDto>> GetStudentsDataFromCanvas(List<StudentDto> students)
         {
             await _semaphore.WaitAsync();
             try
             {
-                var studentTasks = studentIds.Select(async studentId =>
+                var studentTasks = students.Select(async student =>
                 {
-                    var student = await GetFromCanvasApiAsync<StudentDto>($"users/{studentId}");
-                    if (student != null)
+                    var courses = await GetFromCanvasApiAsync<List<CourseApiResponseDto>>($"users/{student.Id}/courses");
+                    if (courses != null)
                     {
-                        var courses = await GetFromCanvasApiAsync<List<CourseApiResponseDto>>($"users/{student.Id}/courses");
-                        if (courses != null)
+                        student.Assessments ??= new List<Assessment>();
+                        student.Courses = courses.Select(c => new Course { Id = c.Id, Name = c.Name }).ToList();
+                        var assessmentTasks = courses.Select(async course =>
                         {
-                            student.Assessments ??= new List<Assessment>();
-                            student.Courses = courses.Select(c => new Course { Id = c.Id, Name = c.Name }).ToList();
-                            var assessmentTasks = courses.Select(async course =>
+                            var assessments = await GetFromCanvasApiAsync<List<AssessmentApiResponseDto>>($"courses/{course.Id}/assignments");
+                            if (assessments != null)
                             {
-                                var assessments = await GetFromCanvasApiAsync<List<AssessmentApiResponseDto>>($"courses/{course.Id}/assignments");
-                                if (assessments != null)
+                                student.Assessments.AddRange(assessments.Select(a => new Assessment
                                 {
-                                    student.Assessments.AddRange(assessments.Select(a => new Assessment
+                                    Id = a.Id,
+                                    Name = a.Name,
+                                    Point = a.Points_possible,
+                                    CourseId = a.Course_id
+                                }));
+                                foreach (var assignment in assessments)
+                                {
+                                    var studentAssessment = await GetFromCanvasApiAsync<StudentAssessmentApiResponseDto>($"courses/{course.Id}/assignments/{assignment.Id}/submissions/{student.Id}");
+                                    if (studentAssessment != null)
                                     {
-                                        Id = a.Id,
-                                        Name = a.Name,
-                                        Point = a.Points_possible,
-                                        CourseId = a.Course_id
-                                    }));
-                                    foreach (var assignment in assessments)
-                                    {
-                                        var studentAssessment = await GetFromCanvasApiAsync<StudentAssessmentApiResponseDto>($"courses/{course.Id}/assignments/{assignment.Id}/submissions/{student.Id}");
-                                        if (studentAssessment != null)
+                                        student.StudentAssessments ??= new List<StudentAssessment>();
+                                        student.StudentAssessments.Add(new StudentAssessment
                                         {
-                                            student.StudentAssessments ??= new List<StudentAssessment>();
-                                            student.StudentAssessments.Add(new StudentAssessment
-                                            {
-                                                AssessmentId = assignment.Id,
-                                                StudentId = student.Id,
-                                                AchievedPoints = studentAssessment.Score
-                                            });
-                                        }
+                                            AssessmentId = assignment.Id,
+                                            StudentId = student.Id,
+                                            AchievedPoints = studentAssessment.Score
+                                        });
                                     }
                                 }
-                            });
-                            await Task.WhenAll(assessmentTasks);
-                        }
-                        return student;
+                            }
+                        });
+                        await Task.WhenAll(assessmentTasks);
                     }
-                    return null;
+                    return student;
                 });
 
-                var students = await Task.WhenAll(studentTasks);
-                return students.Where(student => student != null).ToList();
+                var processedStudents = await Task.WhenAll(studentTasks);
+                return processedStudents.Where(student => student != null).ToList();
             }
             finally
             {
                 _semaphore.Release();
             }
         }
+
         private async Task<T> GetFromCanvasApiAsync<T>(string endpoint)
         {
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _canvasApiToken);

@@ -7,7 +7,7 @@ public class Student
 {
     public required int Id { get; set; }
     public required string Name { get; set; }
-    public int? StreamId { get; set; }
+    public int StreamId { get; set; }
     public Stream? Stream { get; set; }
     public List<StudentAssessment>? StudentAssessments { get; set; }
     public StudentTotalPoint? StudentTotalPoint { get; set; }

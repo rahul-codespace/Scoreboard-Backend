@@ -3,6 +3,7 @@ using Scoreboard.Data;
 using Scoreboard.Data.Context;
 using Scoreboard.Repository.Assessments;
 using Scoreboard.Repository.Courses;
+using Scoreboard.Repository.StreamCourses;
 using Scoreboard.Repository.Streams;
 using Scoreboard.Repository.StudentAssessments;
 using Scoreboard.Repository.Students;
@@ -31,8 +32,9 @@ builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<IAssessmentRepository, AssessmentRepository>();
 builder.Services.AddScoped<IStudentAssessmentRepository, StudentAssessmentRepository>();
 builder.Services.AddScoped<IStudentTotalPointRepository, StudentTotalPointRepository>();
+builder.Services.AddScoped<IStreamCoursesRepository, StreamCoursesRepository>();
 builder.Services.AddScoped<IStreamRepository, StreamRepository>();
-builder.Services.AddHostedService<ScoreboardBackgroundServices>();
+//builder.Services.AddHostedService<ScoreboardBackgroundServices>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

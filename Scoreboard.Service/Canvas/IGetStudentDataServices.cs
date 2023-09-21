@@ -9,6 +9,6 @@ namespace Scoreboard.Service.Canvas
 {
     public interface IGetStudentDataServices
     {
-        Task<List<StudentDto>> SeedStudentsDataAsync(List<int> studentIds);
+        Task<List<StudentDto>> GetStudentsDataFromCanvas(List<StudentDto> students);
     }
 }

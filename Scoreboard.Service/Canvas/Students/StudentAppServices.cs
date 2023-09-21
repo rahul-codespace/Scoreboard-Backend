@@ -1,15 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Scoreboard.Contracts.Canvas.ResponseDto;
+﻿using Microsoft.Extensions.Logging;
 using Scoreboard.Contracts.Students;
-using Scoreboard.Domain.Models;
 using Scoreboard.Repository.Assessments;
 using Scoreboard.Repository.Courses;
+using Scoreboard.Repository.StreamCourses;
 using Scoreboard.Repository.StudentAssessments;
 using Scoreboard.Repository.Students;
 using Scoreboard.Repository.StudentTotalPoints;
-using System.Net.Http.Headers;
 
 namespace Scoreboard.Service.Canvas.Students
 {
@@ -20,9 +16,11 @@ namespace Scoreboard.Service.Canvas.Students
         private readonly IStudentRepository _studentRepository;
         private readonly ICourseRepository _courseRepository;
         private readonly IAssessmentRepository _assessmentRepository;
-        public readonly IStudentAssessmentRepository _studentAssessmentRepository;
-        public readonly IStudentTotalPointRepository _studentTotalPointRepository;
-        public readonly IGetStudentDataServices _getStudentDataServices;
+        private readonly IStudentAssessmentRepository _studentAssessmentRepository;
+        private readonly IStudentTotalPointRepository _studentTotalPointRepository;
+        private readonly IGetStudentDataServices _getStudentDataServices;
+        private readonly IStreamCoursesRepository _streamCoursesRepository;
+
 
         public StudentAppServices(
             IGetStudentDataServices getStudentDataServices,
@@ -31,7 +29,8 @@ namespace Scoreboard.Service.Canvas.Students
             ICourseRepository courseRepository,
             IStudentAssessmentRepository studentAssessmentRepository,
             IAssessmentRepository assessmentRepository,
-            IStudentTotalPointRepository studentTotalPointRepository
+            IStudentTotalPointRepository studentTotalPointRepository,
+            IStreamCoursesRepository streamCoursesRepository
             )
         {
             _logger = logger;
@@ -41,6 +40,7 @@ namespace Scoreboard.Service.Canvas.Students
             _assessmentRepository = assessmentRepository;
             _studentTotalPointRepository = studentTotalPointRepository;
             _getStudentDataServices = getStudentDataServices;
+            _streamCoursesRepository = streamCoursesRepository;
         }
 
         public async Task SeedData(CancellationToken stoppingToken)
@@ -52,11 +52,11 @@ namespace Scoreboard.Service.Canvas.Students
                 _logger.LogInformation(
                     "Scoped Processing Service is working. Count: {Count}", executionCount);
 
-                var studentIds = await _studentRepository.GetStudentsIds();
-                var students = await _getStudentDataServices.SeedStudentsDataAsync(studentIds);
+                var studentData = await _studentRepository.GetStudentsAsync();
+                var students = await _getStudentDataServices.GetStudentsDataFromCanvas(studentData);
                 await SeedStudentDataInDatabaseAsync(students);
 
-                await Task.Delay(TimeSpan.FromMinutes(2), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             }
         }
 
@@ -68,6 +68,7 @@ namespace Scoreboard.Service.Canvas.Students
                 try
                 {
                     await _courseRepository.AddCourseListAsync(student.Courses);
+                    await _streamCoursesRepository.AddListAsync(student.StreamId, student.Courses);
                     await _assessmentRepository.AddAssessmentListAsync(student.Assessments);
                     await _studentAssessmentRepository.AddStudentAssessmentsAsync(student.StudentAssessments);
                     await _studentTotalPointRepository.AddStudentTotalPointAsync(student.Id);
