@@ -12,6 +12,7 @@ public class ScoreboardDbContext : DbContext
     public DbSet<Assessment> Assessments { get; set; }
     public DbSet<StudentAssessment> StudentAssesments { get; set; }
     public DbSet<StudentTotalPoint> StudentTotalPoints { get; set; }
+    public DbSet<SubmissionComment> SubmissionComments { get; set; }
 
     public ScoreboardDbContext(DbContextOptions<ScoreboardDbContext> options): base(options) {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -32,12 +33,25 @@ public class ScoreboardDbContext : DbContext
 
         builder.Entity<StreamCourse>(b =>
         {
-            b.HasKey(sc => new { sc.StreamId, sc.CourseId });
+            b.HasKey(sc => sc.Id);
+            b.HasAlternateKey(sc => new { sc.StreamId, sc.CourseId});
+            b.Property(sc => sc.Id).ValueGeneratedOnAdd();
         });
 
         builder.Entity<StudentAssessment>(b =>
         {
-            b.HasKey(sa => new { sa.StudentId, sa.AssessmentId });
+            b.HasKey(sa => sa.Id);
+            b.HasKey(sa => new { sa.StudentId, sa.AssessmentId});
+            b.Property(sa => sa.Id).ValueGeneratedOnAdd();
+        });
+
+        builder.Entity<SubmissionComment>(b =>
+        {
+            b.HasKey(sc => sc.Id);
+            b.HasOne(sc => sc.StudentAssessment)
+                .WithMany(sa => sa.SubmissionComments)
+                .HasForeignKey(sa => new {sa.StudentId, sa.AssessmentId})
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         builder.Entity<StudentTotalPoint>(b =>
@@ -50,7 +64,6 @@ public class ScoreboardDbContext : DbContext
 
         builder.Entity<Course>(b =>
         {
-            
             b.HasMany(c => c.Streams)
                 .WithOne(c => c.Course)
                 .HasForeignKey(c => c.CourseId)

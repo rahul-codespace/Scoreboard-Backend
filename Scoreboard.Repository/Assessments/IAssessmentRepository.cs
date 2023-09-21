@@ -4,6 +4,6 @@ namespace Scoreboard.Repository.Assessments
 {
     public interface IAssessmentRepository
     {
-        Task<List<Assessment>> AddAssessmentListAsync(List<Assessment> assessments);
+        Task<List<Assessment>> AddListAsync(List<Assessment> assessments);
     }
 }

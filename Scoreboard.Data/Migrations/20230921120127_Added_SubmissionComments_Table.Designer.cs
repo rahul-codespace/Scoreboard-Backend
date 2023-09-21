@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Scoreboard.Data.Context;
@@ -11,9 +12,11 @@ using Scoreboard.Data.Context;
 namespace Scoreboard.Data.Migrations
 {
     [DbContext(typeof(ScoreboardDbContext))]
-    partial class ScoreboardDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230921120127_Added_SubmissionComments_Table")]
+    partial class Added_SubmissionComments_Table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -142,25 +145,27 @@ namespace Scoreboard.Data.Migrations
 
             modelBuilder.Entity("Scoreboard.Domain.Models.StudentAssessment", b =>
                 {
-                    b.Property<int>("StudentId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("AssessmentId")
-                        .HasColumnType("integer");
-
-                    b.Property<float?>("AchievedPoints")
-                        .HasColumnType("real");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.HasKey("StudentId", "AssessmentId");
+                    b.Property<float?>("AchievedPoints")
+                        .HasColumnType("real");
+
+                    b.Property<int>("AssessmentId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("StudentId", "AssessmentId");
 
                     b.HasIndex("AssessmentId");
 
@@ -206,26 +211,30 @@ namespace Scoreboard.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AssessmentId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("AuthorId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasAnnotation("Relational:JsonPropertyName", "author_id");
 
                     b.Property<string>("AuthorName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasAnnotation("Relational:JsonPropertyName", "author_name");
 
                     b.Property<string>("Comment")
                         .HasColumnType("text");
+
+                    b.Property<int>("StudentAssessmentId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("StudentId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentId", "AssessmentId");
+                    b.HasIndex("StudentAssessmentId");
+
+                    b.HasIndex("StudentId");
 
                     b.ToTable("SubmissionComments");
                 });
@@ -303,15 +312,15 @@ namespace Scoreboard.Data.Migrations
 
             modelBuilder.Entity("Scoreboard.Domain.Models.SubmissionComment", b =>
                 {
-                    b.HasOne("Scoreboard.Domain.Models.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
+                    b.HasOne("Scoreboard.Domain.Models.StudentAssessment", "StudentAssessment")
+                        .WithMany("SubmissionComments")
+                        .HasForeignKey("StudentAssessmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Scoreboard.Domain.Models.StudentAssessment", "StudentAssessment")
-                        .WithMany("SubmissionComments")
-                        .HasForeignKey("StudentId", "AssessmentId")
+                    b.HasOne("Scoreboard.Domain.Models.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

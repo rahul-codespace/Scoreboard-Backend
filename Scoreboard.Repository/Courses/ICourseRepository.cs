@@ -12,7 +12,7 @@ namespace Scoreboard.Repository.Courses
         Task<Course?> GetCourseAsync(int id);
         Task<List<Course>> GetCoursesAsync();
         Task<Course> AddCourseAsync(Course course);
-        Task<List<Course>> AddCourseListAsync(List<Course> courses);
+        Task<List<Course>> AddListAsync(List<Course> courses);
         Task<Course> UpdateCourseAsync(Course course);
         Task<Course?> DeleteCourseAsync(int id);
     }

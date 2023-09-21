@@ -21,16 +21,19 @@ public class CanvasController : ControllerBase
         _studentRepository = studentRepository;
     }
 
-    [HttpPost]
-    public async Task<ActionResult<Student>> SeedStudentsDataAsync()
+    [HttpGet]
+    public async Task<ActionResult> SeedStudentsDataAsync()
     {
-        var students = await _studentRepository.GetStudentsAsync();
-        var studentsData = await _getStudentDataServices.GetStudentsDataFromCanvas(students);
-        var result = await _studentAppServices.SeedStudentDataInDatabaseAsync(studentsData);
-        if (result == null)
+        try
         {
-            return BadRequest($"Students not found");
+            var students = await _studentRepository.GetStudentsAsync();
+            var studentsData = await _getStudentDataServices.GetStudentsDataFromCanvas(students);
+            await _studentAppServices.SeedStudentDataInDatabaseAsync(studentsData);
+            return Ok("Data saved successfully.");
         }
-        return Ok(students);
+        catch (Exception ex)
+        {
+            return BadRequest(ex);
+        }
     }
 }

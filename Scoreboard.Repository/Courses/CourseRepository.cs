@@ -27,7 +27,7 @@ public class CourseRepository : ICourseRepository
         await _context.SaveChangesAsync();
         return course;
     }
-    public async Task<List<Course>> AddCourseListAsync(List<Course> courses)
+    public async Task<List<Course>> AddListAsync(List<Course> courses)
     {
         if (courses != null)
         {

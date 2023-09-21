@@ -10,7 +10,7 @@ namespace Scoreboard.Repository.Assessments
         {
             _context = context;
         }
-        public async Task<List<Assessment>> AddAssessmentListAsync(List<Assessment> assessments)
+        public async Task<List<Assessment>> AddListAsync(List<Assessment> assessments)
         {
             if (assessments!=null)
             {

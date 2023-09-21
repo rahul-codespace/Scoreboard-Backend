@@ -6,6 +6,7 @@ using Scoreboard.Repository.StreamCourses;
 using Scoreboard.Repository.StudentAssessments;
 using Scoreboard.Repository.Students;
 using Scoreboard.Repository.StudentTotalPoints;
+using Scoreboard.Repository.SubmissionComments;
 
 namespace Scoreboard.Service.Canvas.Students
 {
@@ -20,6 +21,7 @@ namespace Scoreboard.Service.Canvas.Students
         private readonly IStudentTotalPointRepository _studentTotalPointRepository;
         private readonly IGetStudentDataServices _getStudentDataServices;
         private readonly IStreamCoursesRepository _streamCoursesRepository;
+        private readonly ISubmissionCommentRepository _submissionCommentRepository;
 
 
         public StudentAppServices(
@@ -30,7 +32,8 @@ namespace Scoreboard.Service.Canvas.Students
             IStudentAssessmentRepository studentAssessmentRepository,
             IAssessmentRepository assessmentRepository,
             IStudentTotalPointRepository studentTotalPointRepository,
-            IStreamCoursesRepository streamCoursesRepository
+            IStreamCoursesRepository streamCoursesRepository,
+            ISubmissionCommentRepository submissionCommentRepository
             )
         {
             _logger = logger;
@@ -41,6 +44,7 @@ namespace Scoreboard.Service.Canvas.Students
             _studentTotalPointRepository = studentTotalPointRepository;
             _getStudentDataServices = getStudentDataServices;
             _streamCoursesRepository = streamCoursesRepository;
+            _submissionCommentRepository = submissionCommentRepository;
         }
 
         public async Task SeedData(CancellationToken stoppingToken)
@@ -60,17 +64,18 @@ namespace Scoreboard.Service.Canvas.Students
             }
         }
 
-        public async Task<List<StudentDto>> SeedStudentDataInDatabaseAsync(List<StudentDto> students)
+        public async Task SeedStudentDataInDatabaseAsync(List<StudentDto> students)
         {
             await _studentRepository.RemoveTableDataAsync(); // removeing courses and student total points
             foreach (var student in students)
             {
                 try
                 {
-                    await _courseRepository.AddCourseListAsync(student.Courses);
+                    await _courseRepository.AddListAsync(student.Courses);
                     await _streamCoursesRepository.AddListAsync(student.StreamId, student.Courses);
-                    await _assessmentRepository.AddAssessmentListAsync(student.Assessments);
-                    await _studentAssessmentRepository.AddStudentAssessmentsAsync(student.StudentAssessments);
+                    await _assessmentRepository.AddListAsync(student.Assessments);
+                    await _studentAssessmentRepository.AddListAsync(student.StudentAssessments);
+                    await _submissionCommentRepository.AddListAsync(student.SubmissionComments);
                     await _studentTotalPointRepository.AddStudentTotalPointAsync(student.Id);
                 }
                 catch (Exception ex)
@@ -78,7 +83,6 @@ namespace Scoreboard.Service.Canvas.Students
                     _logger.LogError($"Error seeding student data in database for student {student.Id}: {ex.Message}");
                 }
             }
-            return students;
         }
     }
 }

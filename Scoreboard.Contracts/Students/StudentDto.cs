@@ -10,5 +10,6 @@ namespace Scoreboard.Contracts.Students
         public List<Course> Courses { get; set; }
         public List<Assessment> Assessments { get; set; }
         public List<StudentAssessment> StudentAssessments { get; set; }
+        public List<SubmissionComment> SubmissionComments { get; set; }
     }
 }

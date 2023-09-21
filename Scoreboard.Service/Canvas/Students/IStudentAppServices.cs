@@ -10,7 +10,7 @@ namespace Scoreboard.Service.Canvas.Students
 {
     public interface IStudentAppServices
     {
-        Task<List<StudentDto>> SeedStudentDataInDatabaseAsync(List<StudentDto> students);
+        Task SeedStudentDataInDatabaseAsync(List<StudentDto> students);
         Task SeedData(CancellationToken stoppingToken);
     }
 }
