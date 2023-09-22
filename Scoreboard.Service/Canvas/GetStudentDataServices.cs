@@ -55,16 +55,28 @@ namespace Scoreboard.Service.Canvas
                                 }));
                                 foreach (var assignment in assessments)
                                 {
-                                    var studentAssessment = await GetFromCanvasApiAsync<StudentAssessmentApiResponseDto>($"courses/{course.Id}/assignments/{assignment.Id}/submissions/{student.Id}");
+                                    var studentAssessment = await GetFromCanvasApiAsync<StudentAssessmentApiResponseDto>($"courses/{course.Id}/assignments/{assignment.Id}/submissions/{student.Id}?include=submission_comments");
                                     if (studentAssessment != null)
                                     {
                                         student.StudentAssessments ??= new List<StudentAssessment>();
-                                        student.StudentAssessments.Add(new StudentAssessment
+
+                                        var studentAssessmentDto = new StudentAssessment
                                         {
                                             AssessmentId = assignment.Id,
                                             StudentId = student.Id,
                                             AchievedPoints = studentAssessment.Score
-                                        });
+                                        };
+
+                                        student.StudentAssessments.Add(studentAssessmentDto);
+                                        student.SubmissionComments ??= new List<SubmissionComment>();
+                                        student.SubmissionComments.AddRange(studentAssessment.SubmissionComments.Select(c => new SubmissionComment
+                                        {
+                                            AssessmentId = assignment.Id,
+                                            StudentId = student.Id,
+                                            Comment = c.Comment,
+                                            AuthorId = c.AuthorId,
+                                            AuthorName = c.AuthorName,
+                                        }));
                                     }
                                 }
                             }
@@ -97,5 +109,22 @@ namespace Scoreboard.Service.Canvas
             _logger.LogError($"Error getting data from Canvas API for endpoint {endpoint}: {response.StatusCode}");
             return default;
         }
+
+        public async Task<StudentAssessmentApiResponseDto> GetStudentAssignment()
+        {
+            var studentAssessment = await GetFromCanvasApiAsync<StudentAssessmentApiResponseDto>($"courses/5/assignments/10/submissions/297?include=submission_comments");
+            if (studentAssessment != null)
+            {
+                var assignment = new List<StudentAssessment>();
+                assignment.Add(new StudentAssessment
+                {
+                    AssessmentId = 2,
+                    StudentId = 1,
+                    AchievedPoints = studentAssessment.Score
+                });
+            }
+            return studentAssessment;
+        }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Scoreboard.Contracts.Streams;
 using Scoreboard.Data.Context;
 
 namespace Scoreboard.Repository.Streams;
@@ -12,14 +13,40 @@ public class StreamRepository : IStreamRepository
         _context = context;
     }
 
-    public async Task<Domain.Models.Stream?> GetStreamAsync(int id)
+    public async Task<Domain.Models.Stream> GetStreamAsync(int id)
     {
-        return await _context.Streams.FirstOrDefaultAsync(s => s.Id == id);
+        var stream = await (
+            from s in _context.Streams
+            where s.Id == id
+            select new Domain.Models.Stream
+            {
+                Id = s.Id,
+                Name = s.Name,
+                CreatedAt = s.CreatedAt,
+                Students = s.Students.ToList(),
+                StreamCourses = s.StreamCourses.ToList()
+            }
+        ).FirstOrDefaultAsync();
+
+        return stream;
     }
+
     public async Task<List<Domain.Models.Stream>> GetStreamsAsync()
     {
-        return await _context.Streams.ToListAsync();
+        var result = await (
+            from s in _context.Streams
+            select new Domain.Models.Stream
+            {
+                Id = s.Id,
+                Name = s.Name,
+                CreatedAt = s.CreatedAt,
+                Students = s.Students.ToList(),                
+                StreamCourses = s.StreamCourses.ToList()
+            }).ToListAsync();
+
+        return result;
     }
+
     public async Task<Domain.Models.Stream> AddStreamAsync(Domain.Models.Stream stream)
     {
         var result = await _context.Streams.FirstOrDefaultAsync(s => s.Id == stream.Id);

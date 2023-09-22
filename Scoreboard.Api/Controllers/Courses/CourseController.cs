@@ -23,7 +23,7 @@ public class CourseController : ControllerBase
         {
             return BadRequest($"Courses not found");
         }
-        return Ok(courses);
+        return Ok(courses); 
     }
     [HttpGet("{id}")]
     public async Task<ActionResult<Course>> GetCourseAsync(int id)
@@ -68,7 +68,7 @@ public class CourseController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<List<Course>>> AddCourseListAsync(List<Course> courses)
     {
-        var result = await _courseRepository.AddCourseListAsync(courses);
+        var result = await _courseRepository.AddListAsync(courses);
         if (result == null)
         {
             return BadRequest($"Courses not found");

@@ -1,4 +1,5 @@
-﻿using Scoreboard.Contracts.Students;
+﻿using Scoreboard.Contracts.Canvas.ResponseDto;
+using Scoreboard.Contracts.Students;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace Scoreboard.Service.Canvas
 {
     public interface IGetStudentDataServices
     {
+        Task<StudentAssessmentApiResponseDto> GetStudentAssignment();
         Task<List<StudentDto>> GetStudentsDataFromCanvas(List<StudentDto> students);
     }
 }

@@ -21,7 +21,7 @@ namespace Scoreboard.Repository.StudentAssessments
             return studentAssessments;
         }
 
-        public async Task<List<StudentAssessment>> AddStudentAssessmentsAsync(List<StudentAssessment> studentAssessments)
+        public async Task<List<StudentAssessment>> AddListAsync(List<StudentAssessment> studentAssessments)
         {
             if (studentAssessments != null) {
                 foreach (var assessment in studentAssessments)

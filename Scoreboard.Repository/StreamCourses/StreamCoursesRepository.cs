@@ -35,11 +35,27 @@ namespace Scoreboard.Repository.StreamCourses
 
         public async Task<StreamCourse> GetStreamCourseAsync(int streamId, int courseId)
         {
-            return await _context.StreamCourses.Include(a=>a.Stream).Include(a=>a.Course).FirstOrDefaultAsync(x => x.CourseId == courseId && x.StreamId == streamId);
+            return await _context.StreamCourses.Include(s=>s.Stream).Include(c=>c.Course).FirstOrDefaultAsync(x => x.CourseId == courseId && x.StreamId == streamId);
         }
         public async Task<List<StreamCourse>> GetStreamCoursesAsync()
         {
-            return await _context.StreamCourses.Include(a => a.Stream).Include(a => a.Course).ToListAsync();
+            var result = await (
+                from sc in _context.StreamCourses
+                join s in _context.Streams on sc.StreamId equals s.Id into streamGroup
+                from stream in streamGroup.DefaultIfEmpty()
+                join c in _context.Courses on sc.CourseId equals c.Id into courseGroup
+                from course in courseGroup.DefaultIfEmpty()
+                select new StreamCourse
+                {
+                    StreamId = sc.StreamId,
+                    CourseId = sc.CourseId,
+                    CreatedAt = sc.CreatedAt,
+                    Stream = stream,
+                    Course = course,
+                }
+            ).ToListAsync();
+
+            return result;
         }
     }
 }

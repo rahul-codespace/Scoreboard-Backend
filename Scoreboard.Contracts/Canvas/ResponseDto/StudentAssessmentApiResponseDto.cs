@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
+using Scoreboard.Domain.Models;
 
 namespace Scoreboard.Contracts.Canvas.ResponseDto
 {
@@ -10,5 +7,8 @@ namespace Scoreboard.Contracts.Canvas.ResponseDto
     {
         public int? Id { get; set; }
         public float? Score { get; set; }
+
+        [JsonProperty("submission_comments")]
+        public List<SubmissionComment> SubmissionComments { get; set; }
     }
 }

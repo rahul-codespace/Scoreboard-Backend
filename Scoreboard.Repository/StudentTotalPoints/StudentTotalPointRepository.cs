@@ -15,21 +15,24 @@ namespace Scoreboard.Repository.StudentTotalPoints
 
         public async Task<StudentTotalPoint> AddStudentTotalPointAsync(int studentId)
         {
-            var allAssisments = await _context.StudentAssesments.Where(a => a.StudentId == studentId && a.AchievedPoints != null).ToListAsync();
-            var allPoints = 0.0f;
-            foreach (var assissment in allAssisments)
+            var StudentAssissments = await _context.StudentAssesments.Where(a => a.StudentId == studentId && a.AchievedPoints != null).ToListAsync();
+            var totalAchievedPoints = 0.0f;
+            foreach (var assissment in StudentAssissments)
             {
                 if (assissment.AchievedPoints != null)
                 {
-                    allPoints += assissment.AchievedPoints.Value;
+                    var Assignments = await _context.Assessments.FirstOrDefaultAsync(a => a.Id == assissment.AssessmentId);
+                    totalAchievedPoints += Assignments.Point.Value;
                 }
             }
-            var totalPoints = allAssisments.Sum(a => a.AchievedPoints);
-            var percentageScore = (totalPoints / allPoints) * 100;
+            var totalPoints = StudentAssissments.Sum(a => a.AchievedPoints);
+            var percentageScore = (totalPoints / totalAchievedPoints) * 100;
+
+
             var studentTotalPointNew = new StudentTotalPoint
             {
                 StudentId = studentId,
-                TotalPoints = allPoints,
+                TotalPoints = totalAchievedPoints,
                 TotalAchievedPoints = totalPoints ?? 0.0f,
                 PercentageScore = percentageScore ?? 0.0f
             };

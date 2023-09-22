@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Scoreboard.Data;
 using Scoreboard.Data.Context;
+using Scoreboard.Domain.Models;
 using Scoreboard.Repository.Assessments;
 using Scoreboard.Repository.Courses;
 using Scoreboard.Repository.StreamCourses;
@@ -8,6 +9,7 @@ using Scoreboard.Repository.Streams;
 using Scoreboard.Repository.StudentAssessments;
 using Scoreboard.Repository.Students;
 using Scoreboard.Repository.StudentTotalPoints;
+using Scoreboard.Repository.SubmissionComments;
 using Scoreboard.Service.BackgroundWork;
 using Scoreboard.Service.Canvas;
 using Scoreboard.Service.Canvas.Students;
@@ -33,6 +35,7 @@ builder.Services.AddScoped<IAssessmentRepository, AssessmentRepository>();
 builder.Services.AddScoped<IStudentAssessmentRepository, StudentAssessmentRepository>();
 builder.Services.AddScoped<IStudentTotalPointRepository, StudentTotalPointRepository>();
 builder.Services.AddScoped<IStreamCoursesRepository, StreamCoursesRepository>();
+builder.Services.AddScoped<ISubmissionCommentRepository, SubmissionCommentRepository>();
 builder.Services.AddScoped<IStreamRepository, StreamRepository>();
 //builder.Services.AddHostedService<ScoreboardBackgroundServices>();
 
