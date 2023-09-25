@@ -21,4 +21,8 @@
     <ProjectReference Include="..\Scoreboard.Repository\Scoreboard.Repository.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Auth\" />
+  </ItemGroup>
+
 </Project>

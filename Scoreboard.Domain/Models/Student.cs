@@ -1,7 +1,4 @@
-﻿
-using Newtonsoft.Json;
-
-namespace Scoreboard.Domain.Models;
+﻿namespace Scoreboard.Domain.Models;
 
 public class Student
 {

@@ -12,5 +12,6 @@ namespace Scoreboard.Service.Canvas
     {
         Task<StudentAssessmentApiResponseDto> GetStudentAssignment();
         Task<List<StudentDto>> GetStudentsDataFromCanvas(List<StudentDto> students);
+        Task<GetStudentDataDto> GetStudentData(int Id);
     }
 }

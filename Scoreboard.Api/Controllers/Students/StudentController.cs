@@ -3,6 +3,7 @@ using Scoreboard.Contracts.Students;
 using Scoreboard.Data.Context;
 using Scoreboard.Domain.Models;
 using Scoreboard.Repository.Students;
+using Scoreboard.Service.Canvas.Students;
 
 namespace Scoreboard.Api.Controllers.Students
 {
@@ -11,10 +12,12 @@ namespace Scoreboard.Api.Controllers.Students
     public class StudentController : ControllerBase
     {
         private readonly IStudentRepository _studentRepository;
+        private readonly IStudentAppServices _studentAppServices;
 
-        public StudentController(IStudentRepository studentRepository)
+        public StudentController(IStudentRepository studentRepository, IStudentAppServices studentAppServices)
         {
             _studentRepository = studentRepository;
+            _studentAppServices = studentAppServices;
         }
         [HttpGet]
         public async Task<ActionResult<List<GetStudentDto>>> GetStudentsAsync()
@@ -37,13 +40,12 @@ namespace Scoreboard.Api.Controllers.Students
             return Ok(student);
         }
         [HttpPost]
-        public async Task<ActionResult<Student>> AddStudentAsync(AddStudentDto input)
+        public async Task<ActionResult<Student>> RegisterStudent(RegisterStudentDto input)
         {
-            var student = new Student{Id = input.Id, Name = input.Name, StreamId = input.StreamId};
-            var result = await _studentRepository.AddStudentAsync(student);
+            var result = await _studentAppServices.RegisterStudent(input);
             if (result == null)
             {
-                return BadRequest($"Student {student.Id} not found");
+                return BadRequest($"Student {input.Id} not found");
             }
             return Ok(result);
         }
