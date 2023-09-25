@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Scoreboard.Data;
@@ -9,6 +10,7 @@ using Scoreboard.Domain.Models;
 using Scoreboard.Repository.Assessments;
 using Scoreboard.Repository.Auths;
 using Scoreboard.Repository.Courses;
+using Scoreboard.Repository.Scoreboards;
 using Scoreboard.Repository.StreamCourses;
 using Scoreboard.Repository.Streams;
 using Scoreboard.Repository.StudentAssessments;
@@ -27,8 +29,13 @@ var configuration = builder.Configuration;
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddControllers().AddJsonOptions(x =>
-                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    options.JsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals;
+    // Other options as needed
+});
+
 var _configuration = builder.Configuration;
 
 builder.Services.AddDbContext<ScoreboardDbContext>(options =>
@@ -76,6 +83,7 @@ builder.Services.AddScoped<IStreamCoursesRepository, StreamCoursesRepository>();
 builder.Services.AddScoped<ISubmissionCommentRepository, SubmissionCommentRepository>();
 builder.Services.AddScoped<IStreamRepository, StreamRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IScoreboardRepository, ScoreboardRepository>(); 
 //builder.Services.AddHostedService<ScoreboardBackgroundServices>();
 
 
