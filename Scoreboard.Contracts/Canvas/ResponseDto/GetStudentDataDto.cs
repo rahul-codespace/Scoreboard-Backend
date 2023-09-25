@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Scoreboard.Contracts.Students
+namespace Scoreboard.Contracts.Canvas.ResponseDto
 {
-    public class AddStudentDto
+    public class GetStudentDataDto
     {
-        public required int Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
-        public required int StreamId { get; set; }
+        public string Email { get; set; }
     }
 }

@@ -1,6 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Scoreboard.Contracts.Students;
+using Scoreboard.Data.Context;
+using Scoreboard.Domain.Models;
 using Scoreboard.Repository.Assessments;
+using Scoreboard.Repository.Auths;
 using Scoreboard.Repository.Courses;
 using Scoreboard.Repository.StreamCourses;
 using Scoreboard.Repository.StudentAssessments;
@@ -22,6 +26,8 @@ namespace Scoreboard.Service.Canvas.Students
         private readonly IGetStudentDataServices _getStudentDataServices;
         private readonly IStreamCoursesRepository _streamCoursesRepository;
         private readonly ISubmissionCommentRepository _submissionCommentRepository;
+        private readonly IAuthRepository _authRepository;
+        private readonly ScoreboardDbContext _context;
 
 
         public StudentAppServices(
@@ -33,7 +39,9 @@ namespace Scoreboard.Service.Canvas.Students
             IAssessmentRepository assessmentRepository,
             IStudentTotalPointRepository studentTotalPointRepository,
             IStreamCoursesRepository streamCoursesRepository,
-            ISubmissionCommentRepository submissionCommentRepository
+            ISubmissionCommentRepository submissionCommentRepository,
+            IAuthRepository authRepository,
+            ScoreboardDbContext context
             )
         {
             _logger = logger;
@@ -45,6 +53,8 @@ namespace Scoreboard.Service.Canvas.Students
             _getStudentDataServices = getStudentDataServices;
             _streamCoursesRepository = streamCoursesRepository;
             _submissionCommentRepository = submissionCommentRepository;
+            _authRepository = authRepository;
+            _context = context;
         }
 
         public async Task SeedData(CancellationToken stoppingToken)
@@ -84,5 +94,50 @@ namespace Scoreboard.Service.Canvas.Students
                 }
             }
         }
+
+        public async Task<Student> RegisterStudent(RegisterStudentDto input)
+        {
+            using (var dbContextTransaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var canvasStudent = await _getStudentDataServices.GetStudentData(input.Id);
+                    if (canvasStudent == null)
+                    {
+                        return null;
+                    }
+
+                    var student = new Student
+                    {
+                        Id = canvasStudent.Id,
+                        Name = canvasStudent.Name,
+                        StreamId = input.StreamId
+                    };
+
+                    await _studentRepository.AddStudentAsync(student);
+
+                    var user = new ScoreboardUser
+                    {
+                        Name = input.Name,
+                        Email = canvasStudent.Email,
+                        UserName = canvasStudent.Email,
+                    };
+
+                    await _authRepository.Register(user, input.Password);
+                    await _authRepository.AddRoleToUser(user, "Student");
+
+                    dbContextTransaction.Commit(); // Commit the transaction if all operations were successful
+
+                    return student;
+                }
+                catch (Exception ex)
+                {
+                    // Handle the exception or log it as needed
+                    dbContextTransaction.Rollback(); // Rollback the transaction in case of an error
+                    return null;
+                }
+            }
+        }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.IdentityModel.Tokens;
@@ -95,6 +96,18 @@ namespace Scoreboard.Repository.Auths
                         expires: expires,
                         signingCredentials: new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256));
             return tokenOptions;
+        }
+
+        public async Task<IdentityRole<int>> GetRole(string role)
+        {
+            var result = await _context.Roles.FirstOrDefaultAsync(r => r.Name == role);
+            return result;
+        }
+
+        public async Task<IdentityResult> AddRoleToUser(ScoreboardUser user, string role)
+        {
+            var result = await _userManager.AddToRoleAsync(user, role);
+            return result;
         }
     }
 }

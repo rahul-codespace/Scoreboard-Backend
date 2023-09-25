@@ -69,5 +69,8 @@ namespace Scoreboard.Repository.Auths
         /// <param name="user">The user for whom to generate the reset token.</param>
         /// <returns>Returns the password reset token.</returns>
         Task<string> GenerateResetToken(ScoreboardUser user);
+
+        Task<IdentityRole<int>> GetRole(string role);
+        Task<IdentityResult> AddRoleToUser(ScoreboardUser user, string role);
     }
 }

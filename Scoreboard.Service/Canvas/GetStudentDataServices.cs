@@ -126,5 +126,10 @@ namespace Scoreboard.Service.Canvas
             return studentAssessment;
         }
 
+        public async Task<GetStudentDataDto> GetStudentData(int Id)
+        {
+            var student = await GetFromCanvasApiAsync<GetStudentDataDto>($"users/{Id}");
+            return student;
+        }
     }
 }

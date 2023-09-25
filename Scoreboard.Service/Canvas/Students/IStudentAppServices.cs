@@ -12,5 +12,6 @@ namespace Scoreboard.Service.Canvas.Students
     {
         Task SeedStudentDataInDatabaseAsync(List<StudentDto> students);
         Task SeedData(CancellationToken stoppingToken);
+        Task<Student> RegisterStudent(RegisterStudentDto input);
     }
 }
