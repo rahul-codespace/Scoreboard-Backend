@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Scoreboard.Domain.Models;
 
 namespace Scoreboard.Data.Context;
 
-public class ScoreboardDbContext : DbContext
+public class ScoreboardDbContext : IdentityDbContext<ScoreboardUser, IdentityRole<int>, int>
 {
     public DbSet<Student> Students { get; set; }
     public DbSet<Domain.Models.Stream> Streams { get; set; }
@@ -13,6 +15,7 @@ public class ScoreboardDbContext : DbContext
     public DbSet<StudentAssessment> StudentAssesments { get; set; }
     public DbSet<StudentTotalPoint> StudentTotalPoints { get; set; }
     public DbSet<SubmissionComment> SubmissionComments { get; set; }
+    public DbSet<ScoreboardUser> Users { get; set; }
 
     public ScoreboardDbContext(DbContextOptions<ScoreboardDbContext> options): base(options) {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -74,7 +77,4 @@ public class ScoreboardDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }
-
-
-
 }
