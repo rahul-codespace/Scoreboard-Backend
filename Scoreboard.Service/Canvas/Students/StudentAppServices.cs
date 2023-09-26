@@ -116,15 +116,15 @@ namespace Scoreboard.Service.Canvas.Students
 
                     await _studentRepository.AddStudentAsync(student);
 
-                    var user = new ScoreboardUser
-                    {
-                        Name = input.Name,
-                        Email = canvasStudent.Email,
-                        UserName = canvasStudent.Email,
-                    };
+                    //var user = new ScoreboardUser
+                    //{
+                    //    Name = input.Name,
+                    //    Email = canvasStudent.Email,
+                    //    UserName = canvasStudent.Email,
+                    //};
 
-                    await _authRepository.Register(user, input.Password);
-                    await _authRepository.AddRoleToUser(user, "Student");
+                    //await _authRepository.Register(user, input.Password);
+                    //await _authRepository.AddRoleToUser(user, "Student");
 
                     dbContextTransaction.Commit(); // Commit the transaction if all operations were successful
 
