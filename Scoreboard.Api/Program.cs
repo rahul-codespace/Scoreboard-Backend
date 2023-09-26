@@ -10,6 +10,7 @@ using Scoreboard.Domain.Models;
 using Scoreboard.Repository.Assessments;
 using Scoreboard.Repository.Auths;
 using Scoreboard.Repository.Courses;
+using Scoreboard.Repository.Feedbacks;
 using Scoreboard.Repository.Scoreboards;
 using Scoreboard.Repository.StreamCourses;
 using Scoreboard.Repository.Streams;
@@ -84,8 +85,19 @@ builder.Services.AddScoped<ISubmissionCommentRepository, SubmissionCommentReposi
 builder.Services.AddScoped<IStreamRepository, StreamRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IScoreboardRepository, ScoreboardRepository>(); 
+builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 //builder.Services.AddHostedService<ScoreboardBackgroundServices>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.WithOrigins("https://localhost:4200", "http://localhost:4200")
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials();
+    });
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

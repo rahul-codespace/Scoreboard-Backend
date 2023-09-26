@@ -27,6 +27,8 @@ namespace Scoreboard.Repository.Scoreboards
                                          Id = student.Id,
                                          Name = student.Name,
                                          Stream = stream,
+                                         TotalPoints = totalPoint.TotalPoints ?? float.NaN,
+                                         TotalAchievedPoints = totalPoint.TotalAchievedPoints ?? float.NaN,
                                          Percentage = totalPoint.PercentageScore ?? double.NaN,
                                      })
                                      .OrderByDescending(s => double.IsNaN(s.Percentage) ? double.MinValue : s.Percentage)
