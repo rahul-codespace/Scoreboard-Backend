@@ -146,6 +146,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseCors("AllowAll");
+
 ScorboardDataSeedContributor.Seed(app);
 
 app.Run();

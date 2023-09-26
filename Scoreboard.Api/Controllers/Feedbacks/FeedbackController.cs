@@ -40,5 +40,25 @@ namespace Scoreboard.Api.Controllers.Feedbacks
             var createdFeedback = await _feedbackRepository.CreateFeedbackAsync(newFeedback);
             return Ok(createdFeedback);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetFeedbacksAsync()
+        {
+            var feedbacks = await _feedbackRepository.GetFeedbacksAsync();
+            return Ok(feedbacks);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetFeedbackByIdAsync(int id)
+        {
+            var feedback = await _feedbackRepository.GetFeedbackByIdAsync(id);
+            return Ok(feedback);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetFeedbacksByStudentIdAsync(int studentId)
+        {
+            var feedbacks = await _feedbackRepository.GetFeedbacksByStudentIdAsync(studentId);
+            return Ok(feedbacks);
+        }
     }
 }
