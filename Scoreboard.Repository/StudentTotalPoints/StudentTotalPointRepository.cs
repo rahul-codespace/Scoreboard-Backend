@@ -15,7 +15,7 @@ namespace Scoreboard.Repository.StudentTotalPoints
 
         public async Task<StudentTotalPoint> AddStudentTotalPointAsync(int studentId)
         {
-            var StudentAssissments = await _context.StudentAssesments.Where(a => a.StudentId == studentId && a.AchievedPoints != null).ToListAsync();
+            var StudentAssissments = await _context.StudentAssessments.Where(a => a.StudentId == studentId && a.AchievedPoints != null).ToListAsync();
             var totalAchievedPoints = 0.0f;
             foreach (var assissment in StudentAssissments)
             {

@@ -12,10 +12,11 @@ public class ScoreboardDbContext : IdentityDbContext<ScoreboardUser, IdentityRol
     public DbSet<Course> Courses { get; set; }
     public DbSet<StreamCourse> StreamCourses { get; set; }
     public DbSet<Assessment> Assessments { get; set; }
-    public DbSet<StudentAssessment> StudentAssesments { get; set; }
+    public DbSet<StudentAssessment> StudentAssessments { get; set; }
     public DbSet<StudentTotalPoint> StudentTotalPoints { get; set; }
     public DbSet<SubmissionComment> SubmissionComments { get; set; }
     public DbSet<ScoreboardUser> Users { get; set; }
+    public DbSet<Feedback> Feedbacks { get; set; }
 
     public ScoreboardDbContext(DbContextOptions<ScoreboardDbContext> options): base(options) {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -74,6 +75,15 @@ public class ScoreboardDbContext : IdentityDbContext<ScoreboardUser, IdentityRol
             b.HasMany(b => b.Assessments)
                 .WithOne(b => b.Course)
                 .HasForeignKey(b => b.CourseId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<Feedback>(b =>
+        {
+            b.HasKey(f => f.Id);
+            b.HasOne(b => b.Student)
+                .WithMany(b => b.Feedbacks)
+                .HasForeignKey(b => b.StudentId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

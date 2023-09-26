@@ -8,5 +8,6 @@ public class Student
     public Stream? Stream { get; set; }
     public List<StudentAssessment>? StudentAssessments { get; set; }
     public StudentTotalPoint? StudentTotalPoint { get; set; }
+    public List<Feedback> Feedbacks { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 }

@@ -12,10 +12,10 @@ namespace Scoreboard.Repository.StudentAssessments
         }
         public async Task<StudentAssessment> AddStudentAssessmentAsync(StudentAssessment studentAssessments)
         {
-            var assisment = _context.StudentAssesments.FirstOrDefault(a => studentAssessments.StudentId == a.StudentId && studentAssessments.AssessmentId == a.AssessmentId);
+            var assisment = _context.StudentAssessments.FirstOrDefault(a => studentAssessments.StudentId == a.StudentId && studentAssessments.AssessmentId == a.AssessmentId);
             if (assisment == null)
             {
-                _context.StudentAssesments.Add(studentAssessments);
+                _context.StudentAssessments.Add(studentAssessments);
             }
             await _context.SaveChangesAsync();
             return studentAssessments;
@@ -26,11 +26,11 @@ namespace Scoreboard.Repository.StudentAssessments
             if (studentAssessments != null) {
                 foreach (var assessment in studentAssessments)
                 {
-                    var existingAssessment = _context.StudentAssesments.FirstOrDefault(a => assessment.StudentId == a.StudentId && assessment.AssessmentId == a.AssessmentId);
+                    var existingAssessment = _context.StudentAssessments.FirstOrDefault(a => assessment.StudentId == a.StudentId && assessment.AssessmentId == a.AssessmentId);
 
                     if (existingAssessment == null)
                     {
-                        _context.StudentAssesments.Add(assessment);
+                        _context.StudentAssessments.Add(assessment);
                     }
                 }
                 await _context.SaveChangesAsync();
@@ -40,10 +40,10 @@ namespace Scoreboard.Repository.StudentAssessments
 
         public async Task DeleteAllStudentAssissmentRecordAsync(int studentId)
         {
-            var studentAssessments = _context.StudentAssesments.Where(a => a.StudentId == studentId);
+            var studentAssessments = _context.StudentAssessments.Where(a => a.StudentId == studentId);
             if (studentAssessments != null)
             {
-                _context.StudentAssesments.RemoveRange(studentAssessments);
+                _context.StudentAssessments.RemoveRange(studentAssessments);
                 await _context.SaveChangesAsync();
             }
         }

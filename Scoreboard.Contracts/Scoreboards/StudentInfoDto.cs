@@ -12,6 +12,8 @@ namespace Scoreboard.Contracts.Scoreboards
         public int Id { get; set; }
         public string Name { get; set; }
         public Domain.Models.Stream Stream { get; set; }
+        public float TotalAchievedPoints { get; set; }
+        public float TotalPoints { get; set; }
         public double Percentage { get; set; }
     }
 }
