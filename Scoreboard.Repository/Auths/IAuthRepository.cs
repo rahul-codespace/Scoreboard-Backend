@@ -72,5 +72,6 @@ namespace Scoreboard.Repository.Auths
 
         Task<IdentityRole<int>> GetRole(string role);
         Task<IdentityResult> AddRoleToUser(ScoreboardUser user, string role);
+        Task<IdentityResult> ResetPasswordAsync(ScoreboardUser user, string token, string newPassword);
     }
 }

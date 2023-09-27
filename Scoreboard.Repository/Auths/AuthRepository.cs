@@ -109,5 +109,9 @@ namespace Scoreboard.Repository.Auths
             var result = await _userManager.AddToRoleAsync(user, role);
             return result;
         }
+        public async Task<IdentityResult> ResetPasswordAsync(ScoreboardUser user, string token, string newPassword)
+        {
+            return await _userManager.ResetPasswordAsync(user, token, newPassword);
+        }
     }
 }

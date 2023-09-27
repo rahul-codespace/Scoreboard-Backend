@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scoreboard.Domain", "Scoreb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scoreboard.Data", "Scoreboard.Data\Scoreboard.Data.csproj", "{D2FB017F-FB32-4449-AF7E-1D4D8B04020B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scoreboard.Repository", "Scoreboard.Repository\Scoreboard.Repository.csproj", "{6A88C4B4-2FE8-4499-9261-B7718B0A10F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scoreboard.Repository", "Scoreboard.Repository\Scoreboard.Repository.csproj", "{6A88C4B4-2FE8-4499-9261-B7718B0A10F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scoreboard.Shared", "Scoreboard.Shared\Scoreboard.Shared.csproj", "{54CE0462-6ADF-420F-A0B0-6F18EC85212B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{6A88C4B4-2FE8-4499-9261-B7718B0A10F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A88C4B4-2FE8-4499-9261-B7718B0A10F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A88C4B4-2FE8-4499-9261-B7718B0A10F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54CE0462-6ADF-420F-A0B0-6F18EC85212B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54CE0462-6ADF-420F-A0B0-6F18EC85212B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54CE0462-6ADF-420F-A0B0-6F18EC85212B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54CE0462-6ADF-420F-A0B0-6F18EC85212B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

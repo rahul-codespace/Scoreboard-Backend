@@ -1,26 +1,19 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
-namespace Scoreboard.Domain.Models
+namespace Scoreboard.Domain.Models;
+
+public class SubmissionComment
 {
-    public class SubmissionComment
-    {
-        public int Id { get; set; }
-        public string? Comment { get; set; }
-        public int StudentId { get; set; }
-        public Student Student { get; set; }
-        public int AssessmentId { get; set; }
-        public StudentAssessment? StudentAssessment { get; set; }
+    public int Id { get; set; }
+    public string? Comment { get; set; }
+    public int StudentId { get; set; }
+    public Student Student { get; set; }
+    public int AssessmentId { get; set; }
+    public StudentAssessment? StudentAssessment { get; set; }
 
-        [JsonProperty("author_id")]
-        public string AuthorId { get; set; }
+    [JsonProperty("author_id")]
+    public string AuthorId { get; set; }
 
-        [JsonProperty("author_name")]
-        public string AuthorName { get; set; }
-    }
+    [JsonProperty("author_name")]
+    public string AuthorName { get; set; }
 }
