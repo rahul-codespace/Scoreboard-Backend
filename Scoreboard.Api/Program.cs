@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Scoreboard.Contracts.Emails;
 using Scoreboard.Data;
 using Scoreboard.Data.Context;
 using Scoreboard.Domain.Models;
@@ -20,6 +21,7 @@ using Scoreboard.Repository.StudentTotalPoints;
 using Scoreboard.Repository.SubmissionComments;
 using Scoreboard.Service.Canvas;
 using Scoreboard.Service.Canvas.Students;
+using Scoreboard.Service.Email;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -72,6 +74,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddSingleton(configuration.GetSection("EmailConfig").Get<EmailConfigurationDto>()!);
 
 builder.Services.AddScoped<IStudentAppServices, StudentAppServices>();
 builder.Services.AddScoped<IGetStudentDataServices, GetStudentDataServices>();
@@ -86,6 +89,7 @@ builder.Services.AddScoped<IStreamRepository, StreamRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IScoreboardRepository, ScoreboardRepository>(); 
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+builder.Services.AddScoped<IEmailServices, EmailServices>();
 //builder.Services.AddHostedService<ScoreboardBackgroundServices>();
 
 builder.Services.AddCors(options =>

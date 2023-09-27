@@ -4,8 +4,9 @@ using Scoreboard.Domain.Models;
 using Scoreboard.Repository.Feedbacks;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Scoreboard.Repository.Auths;
+using Scoreboard.Service.Email;
+using Scoreboard.Contracts.Emails;
 
 namespace Scoreboard.Api.Controllers.Feedbacks
 {
@@ -16,11 +17,13 @@ namespace Scoreboard.Api.Controllers.Feedbacks
     {
         private readonly IFeedbackRepository _feedbackRepository;
         private readonly IAuthRepository _userRepository;
+        private readonly IEmailServices _emailServices;
 
-        public FeedbackController(IFeedbackRepository feedbackRepository, IAuthRepository userRepository)
+        public FeedbackController(IFeedbackRepository feedbackRepository, IAuthRepository userRepository, IEmailServices emailServices)
         {
             _feedbackRepository = feedbackRepository;
             _userRepository = userRepository;
+            _emailServices = emailServices;
         }
 
         [HttpPost]
@@ -38,6 +41,7 @@ namespace Scoreboard.Api.Controllers.Feedbacks
                 Rating = feedback.Rating
             };
             var createdFeedback = await _feedbackRepository.CreateFeedbackAsync(newFeedback);
+            _emailServices.SendEmail(new MessageDto(new List<string> { $"{user.Email}" }, "New Feedback", $"New Feedback from {user.Name}: \n {feedback.FeedBackPoints}"));
             return Ok(createdFeedback);
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Scoreboard.Contracts.Emails;
 using Scoreboard.Contracts.Students;
 using Scoreboard.Data.Context;
 using Scoreboard.Domain.Models;
@@ -11,6 +12,7 @@ using Scoreboard.Repository.StudentAssessments;
 using Scoreboard.Repository.Students;
 using Scoreboard.Repository.StudentTotalPoints;
 using Scoreboard.Repository.SubmissionComments;
+using Scoreboard.Service.Email;
 
 namespace Scoreboard.Service.Canvas.Students
 {
@@ -26,6 +28,7 @@ namespace Scoreboard.Service.Canvas.Students
         private readonly IGetStudentDataServices _getStudentDataServices;
         private readonly IStreamCoursesRepository _streamCoursesRepository;
         private readonly ISubmissionCommentRepository _submissionCommentRepository;
+        private readonly IEmailServices _emailServices;
         private readonly IAuthRepository _authRepository;
         private readonly ScoreboardDbContext _context;
 
@@ -41,6 +44,7 @@ namespace Scoreboard.Service.Canvas.Students
             IStreamCoursesRepository streamCoursesRepository,
             ISubmissionCommentRepository submissionCommentRepository,
             IAuthRepository authRepository,
+            IEmailServices emailServices,
             ScoreboardDbContext context
             )
         {
@@ -55,6 +59,7 @@ namespace Scoreboard.Service.Canvas.Students
             _submissionCommentRepository = submissionCommentRepository;
             _authRepository = authRepository;
             _context = context;
+            _emailServices = emailServices;
         }
 
         public async Task SeedData(CancellationToken stoppingToken)
@@ -95,7 +100,7 @@ namespace Scoreboard.Service.Canvas.Students
             }
         }
 
-        public async Task<Student> RegisterStudent(RegisterStudentDto input)
+        public async Task<object> RegisterStudent(RegisterStudentDto input)
         {
             using (var dbContextTransaction = _context.Database.BeginTransaction())
             {
@@ -104,7 +109,7 @@ namespace Scoreboard.Service.Canvas.Students
                     var canvasStudent = await _getStudentDataServices.GetStudentData(input.Id);
                     if (canvasStudent == null)
                     {
-                        return null;
+                        throw new Exception("Student not found in Canvas");
                     }
 
                     var student = new Student
@@ -116,15 +121,42 @@ namespace Scoreboard.Service.Canvas.Students
 
                     await _studentRepository.AddStudentAsync(student);
 
-                    //var user = new ScoreboardUser
-                    //{
-                    //    Name = input.Name,
-                    //    Email = canvasStudent.Email,
-                    //    UserName = canvasStudent.Email,
-                    //};
+                    var existingUser = await _authRepository.GetUser(canvasStudent.Email);
 
-                    //await _authRepository.Register(user, input.Password);
-                    //await _authRepository.AddRoleToUser(user, "Student");
+                    if (existingUser != null)
+                    {
+                        throw new Exception("User already exists please login with your canvas register email Id");   
+                    }
+
+                    var user = new ScoreboardUser
+                    {
+                        Name = input.Name,
+                        Email = canvasStudent.Email,
+                        UserName = canvasStudent.Email,
+                    };
+
+                    await _authRepository.Register(user, input.Password);
+                    await _authRepository.AddRoleToUser(user, "Student");
+
+                    string subject = "Welcome to Scoreboard Platform!";
+                    string recipientEmail = user.Email;
+                    string recipientName = user.Name;
+                    string companyName = "Promact";
+
+                    string messageBody = $"Dear {recipientName},<br><br>" +
+                                        "Welcome to Scoreboard Platform! We're thrilled to have you on board.<br><br>" +
+                                        "Please login with your Canvas registered email address, and your password will remain the same as the one you provided during registration.<br><br>" +
+                                        $"Thanks for choosing Scoreboard Platform, brought to you by {companyName}!<br><br>" +
+                                        "Best regards,<br>" +
+                                        "The Scoreboard Platform Team";
+
+                    _emailServices.SendEmail(new MessageDto(new List<string> { recipientEmail }, subject, messageBody));
+
+
+                    _emailServices.SendEmail(new MessageDto(new List<string> { recipientEmail }, subject, messageBody));
+
+
+
 
                     dbContextTransaction.Commit(); // Commit the transaction if all operations were successful
 
@@ -134,7 +166,13 @@ namespace Scoreboard.Service.Canvas.Students
                 {
                     // Handle the exception or log it as needed
                     dbContextTransaction.Rollback(); // Rollback the transaction in case of an error
-                    return null;
+                    var errorObject = new
+                    {
+                        IsError = true,
+                        ErrorMessage = ex.Message
+                    };
+
+                    return errorObject;
                 }
             }
         }

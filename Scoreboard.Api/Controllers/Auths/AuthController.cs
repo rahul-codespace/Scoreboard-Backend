@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Scoreboard.Contracts.Auths;
+using Scoreboard.Contracts.Emails;
+using Scoreboard.Contracts.Students;
 using Scoreboard.Domain.Models;
 using Scoreboard.Repository.Auths;
+using Scoreboard.Service.Canvas.Students;
+using Scoreboard.Service.Email;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -13,9 +17,13 @@ namespace Scoreboard.Api.Controllers.Auths
     public class AuthController : ControllerBase
     {
         private readonly IAuthRepository _authRepository;
-        public AuthController(IAuthRepository authRepository)
+        private readonly IEmailServices _emailService;
+        private readonly IStudentAppServices _studentAppServices;
+        public AuthController(IAuthRepository authRepository, IEmailServices emailServices, IStudentAppServices studentAppServices)
         {
             _authRepository = authRepository;
+            _emailService = emailServices;
+            _studentAppServices = studentAppServices;
         }
 
         [HttpPost("register")]
@@ -34,7 +42,20 @@ namespace Scoreboard.Api.Controllers.Auths
             }
             return Ok();
         }
+        [HttpPost("register-student")]
+        public async Task<IActionResult> RegisterStudent(RegisterStudentDto input)
+        {
+            var result = await _studentAppServices.RegisterStudent(input);
 
+            if (result is Student student)
+            {
+                return Ok(student);
+            }
+
+            return BadRequest(result);
+
+
+        }
         [HttpPost("login")]
         public async Task<ActionResult> LoginAsync(LoginUserDto input)
         {
@@ -53,30 +74,50 @@ namespace Scoreboard.Api.Controllers.Auths
             await _authRepository.Logout();
             return Ok();
         }
+        [HttpPost("forgot-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            var user = await _authRepository.GetUser(email);
+            if (user == null)
+            {
+                return BadRequest("User not found");
+            }
 
-        //[HttpGet]
-        //public IActionResult ResetPassword(string token, string email)
-        //{
-        //    var model = new ResetPasswordDto { Token = token, Email = email };
-        //    return Ok(model);
-        //}
+            var resetToken = await _authRepository.GenerateResetToken(user);
+            var resetLink = Url.Action(nameof(ResetPassword), "Auth", new { token = resetToken, email = user.Email }, Request.Scheme);
 
-        //[HttpPost]
-        //[AllowAnonymous]
-        //public async Task<ActionResult> ResetPasswordAsync(ResetPasswordDto input)
-        //{
-        //    var user = await _authRepository.GetUser(input.Email);
-        //    if (user == null)
-        //    {
-        //        return BadRequest("Invalid email");
-        //    }
-        //    var result = await _authRepository.ChangePassword(user, input.Token, input.Password);
-        //    if (!result.Succeeded)
-        //    {
-        //        return BadRequest(result.Errors);
-        //    }
-        //    return Ok();
-        //}
+            _emailService.SendPasswordResetEmail(user.Email, resetLink!);
+
+            return Ok("Password reset request successful, please check your email for further instructions");
+        }
+
+        [HttpGet("reset-password")]
+        public IActionResult ResetPassword(string token, string email)
+        {
+            var model = new ResetPasswordDto { Token = token, Email = email };
+            return Ok(model);
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            var user = await _authRepository.GetUser(resetPasswordDto.Email);
+            if (user == null)
+            {
+                return BadRequest($"User not found with {resetPasswordDto.Email}");
+            }
+
+            var resetPasswordResult = await _authRepository.ResetPasswordAsync(user, resetPasswordDto.Token, resetPasswordDto.Password);
+            if (resetPasswordResult.Succeeded)
+            {
+                _emailService.SendEmail(new MessageDto(new List<string> { user.Email }, "Password Changed Successfully", "Password Changed Successfully"));
+                return Ok();
+            }
+
+            resetPasswordResult.Errors.ToList().ForEach(error => ModelState.AddModelError(error.Code, error.Description));
+            return BadRequest(ModelState);
+        }
 
         [Authorize]
         [HttpPost("change-password")]
