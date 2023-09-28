@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Scoreboard.Domain.Models
+﻿namespace Scoreboard.Domain.Models
 {
     public class Feedback
     {
@@ -14,8 +7,17 @@ namespace Scoreboard.Domain.Models
         public string ReviewerName { get; set; }
         public int StudentId { get; set; }
         public Student Student { get; set; }
-        public string FeedBackPoints { get; set; }
+        public string FeedbackPoints { get; set; }
+        public FeedbackType FeedbackType { get; set; }
         public int Rating { get; set; }
+        public DateTime DateTime { get; set; } = DateTime.Now;
+        public bool InCooperated { get; set; }
+    }
 
+    public enum FeedbackType
+    {
+        Negative,
+        Neutral,
+        Positive
     }
 }

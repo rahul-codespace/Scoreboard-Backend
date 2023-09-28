@@ -15,6 +15,7 @@ namespace Scoreboard.Contracts.Scoreboards
     {
         public int Id { get; set; }
         public string? Name { get; set; }
+        public string? Email { get; set; }
         public List<CoursesDto>? Courses { get; set; }
     }
     public class CoursesDto

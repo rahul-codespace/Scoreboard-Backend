@@ -4,6 +4,8 @@ public class Student
 {
     public required int Id { get; set; }
     public required string Name { get; set; }
+    public string Email { get; set; }
+    public ScoreboardUser User { get; set; }
     public int StreamId { get; set; }
     public Stream? Stream { get; set; }
     public List<StudentAssessment>? StudentAssessments { get; set; }
