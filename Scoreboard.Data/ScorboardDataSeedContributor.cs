@@ -30,22 +30,6 @@ namespace Scoreboard.Data
                     });
                     context.SaveChanges();
                 }
-                if (!context.Students.Any())
-                {
-                    context.Students.AddRange(new List<Student>()
-                    {
-                        new Student() { Id = 75, Name = "alisha", StreamId =  3 },
-                        new Student() { Id = 76, Name = "Archie", StreamId =  6 },
-                        new Student() { Id = 100, Name = "Asha Patel", StreamId =  6 },
-                        new Student() { Id = 208, Name = "Akhilesh Chaurasiya", StreamId =  2 },
-                        new Student() { Id = 297, Name = "Rahul Kumar", StreamId =  1 },
-                        new Student() { Id = 315, Name = "ashiyana", StreamId =  2 },
-                        new Student() { Id = 365, Name = "Sudipto", StreamId =  2 },
-                        new Student() { Id = 381, Name = "anuja", StreamId =  4 },
-                        new Student() { Id = 304, Name = "Mayank Vishwakarma", StreamId = 2 }
-                    });
-                    context.SaveChanges();
-                }
                 if (!context.Roles.Any())
                 {
                     context.Roles.AddRange(new List<IdentityRole<int>>()
@@ -89,12 +73,21 @@ namespace Scoreboard.Data
                         },
                         new ScoreboardUser()
                         {
-                            Name = "Rahul",
-                            UserName = "rahul@promactinfo.com",
-                            Email = "rahul@promactinfo.com",
-                            NormalizedEmail = "RAHUL@PROMACTINFO.COM",
+                            Name = "Rahul Kumar",
+                            UserName = "r1303yadav@gmail.com",
+                            Email = "r1303yadav@gmail.com",
+                            NormalizedEmail = "R1303YADAV@GMAIL.COM",
                             LockoutEnabled = true,
                             PasswordHash = hasher.HashPassword(null, "Rahul@2023"),
+                        },
+                        new ScoreboardUser()
+                        {
+                            Name = "Mayank Vishwakarma",
+                            UserName = "vishwakarmajimk012@gmail.com",
+                            Email = "vishwakarmajimk012@gmail.com",
+                            NormalizedEmail = "VISHWAKARMAJIMK012@GMAIL.COM",
+                            LockoutEnabled = true,
+                            PasswordHash = hasher.HashPassword(null, "Mayank@2023"),
                         }
                     });
                     context.SaveChanges();
@@ -105,7 +98,7 @@ namespace Scoreboard.Data
                     var divyangi = await context.Users.FirstOrDefaultAsync(u => u.Email == "divyangi@promactinfo.com");
                     var dipa = await context.Users.FirstOrDefaultAsync(u => u.Email == "dipa@promactinfo.com");
                     var firoja = await context.Users.FirstOrDefaultAsync(u => u.Email == "firoja@promactinfo.com");
-                    var rahul = await context.Users.FirstOrDefaultAsync(u => u.Email == "rahul@promactinfo.com");
+                    var rahul = await context.Users.FirstOrDefaultAsync(u => u.Email == "r1303yadav@gmail.com");
 
                     var hr = await context.Roles.FirstOrDefaultAsync(r => r.Name == "HR");
                     var tl = await context.Roles.FirstOrDefaultAsync(r => r.Name == "TL");
@@ -119,6 +112,22 @@ namespace Scoreboard.Data
                         new IdentityUserRole<int>() {UserId = dipa.Id, RoleId = tl.Id},
                         new IdentityUserRole<int>() {UserId = firoja.Id, RoleId = mentor.Id},
                         new IdentityUserRole<int>() {UserId = rahul.Id, RoleId = student.Id}
+                    });
+                    context.SaveChanges();
+                }
+                if (!context.Students.Any())
+                {
+                    context.Students.AddRange(new List<Student>()
+                    {
+                        //new Student() { Id = 75, Name = "alisha", StreamId =  3 },
+                        //new Student() { Id = 76, Name = "Archie", StreamId =  6 },
+                        //new Student() { Id = 100, Name = "Asha Patel", StreamId =  6 },
+                        //new Student() { Id = 208, Name = "Akhilesh Chaurasiya", StreamId =  2 },
+                        new Student() { Id = 297, Email="r1303yadav@gmail.com", Name = "Rahul Kumar", StreamId =  1 },
+                        //new Student() { Id = 315, Name = "ashiyana", StreamId =  2 },
+                        //new Student() { Id = 365, Name = "Sudipto", StreamId =  2 },
+                        //new Student() { Id = 381, Name = "anuja", StreamId =  4 },
+                        new Student() { Id = 304, Email="vishwakarmajimk012@gmail.com", Name = "Mayank Vishwakarma", StreamId = 2 }
                     });
                     context.SaveChanges();
                 }

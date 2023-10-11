@@ -10,10 +10,9 @@ namespace Scoreboard.Contracts.Students
 {
     public class RegisterStudentDto
     {
-        public required int Id { get; set; }
+        [EmailAddress(ErrorMessage = AuthConsts.EmailErrorMessage)]
+        public required string Email { get; set; }
 
-        [RegularExpression(AuthConsts.NameRegex, ErrorMessage = AuthConsts.NameRegexErrorMessage)]
-        public string Name { get; set; }
         [RegularExpression(AuthConsts.PasswordRegex, ErrorMessage = AuthConsts.PasswordRegexErrorMessage)]
         public string Password { get; set; }
         public required int StreamId { get; set; }

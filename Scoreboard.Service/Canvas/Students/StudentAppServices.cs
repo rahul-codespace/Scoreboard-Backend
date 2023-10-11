@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Scoreboard.Contracts.Emails;
+﻿using Microsoft.Extensions.Logging;
 using Scoreboard.Contracts.Students;
 using Scoreboard.Data.Context;
 using Scoreboard.Domain.Models;
@@ -106,31 +104,25 @@ namespace Scoreboard.Service.Canvas.Students
             {
                 try
                 {
-                    var canvasStudent = await _getStudentDataServices.GetStudentData(input.Id);
-                    if (canvasStudent == null)
+                    // Step 1: Get student data from Canvas
+                    var canvasStudentList = await _getStudentDataServices.GetStudentData(input.Email);
+                    if (canvasStudentList == null)
                     {
                         throw new Exception("Student not found in Canvas");
                     }
 
-                    var student = new Student
-                    {
-                        Id = canvasStudent.Id,
-                        Name = canvasStudent.Name,
-                        StreamId = input.StreamId
-                    };
-
-                    await _studentRepository.AddStudentAsync(student);
-
+                    // Step 2: Check if the user already exists
+                    var canvasStudent = canvasStudentList[0];
                     var existingUser = await _authRepository.GetUser(canvasStudent.Email);
-
                     if (existingUser != null)
                     {
-                        throw new Exception("User already exists please login with your canvas register email Id");   
+                        throw new Exception("User already exists. Please login with your Canvas registered email Id");
                     }
 
+                    // Step 3: Create a new ScoreboardUser and register it
                     var user = new ScoreboardUser
                     {
-                        Name = input.Name,
+                        Name = canvasStudent.Name,
                         Email = canvasStudent.Email,
                         UserName = canvasStudent.Email,
                     };
@@ -138,33 +130,40 @@ namespace Scoreboard.Service.Canvas.Students
                     await _authRepository.Register(user, input.Password);
                     await _authRepository.AddRoleToUser(user, "Student");
 
-                    string subject = "Welcome to Scoreboard Platform!";
-                    string recipientEmail = user.Email;
-                    string recipientName = user.Name;
-                    string companyName = "Promact";
+                    // Step 4: Create a new Student and add it to the repository
+                    var student = new Student
+                    {
+                        Id = canvasStudent.Id,
+                        Name = canvasStudent.Name,
+                        StreamId = input.StreamId,
+                        Email = canvasStudent.Email,
+                    };
 
-                    string messageBody = $"Dear {recipientName},<br><br>" +
-                                        "Welcome to Scoreboard Platform! We're thrilled to have you on board.<br><br>" +
-                                        "Please login with your Canvas registered email address, and your password will remain the same as the one you provided during registration.<br><br>" +
-                                        $"Thanks for choosing Scoreboard Platform, brought to you by {companyName}!<br><br>" +
-                                        "Best regards,<br>" +
-                                        "The Scoreboard Platform Team";
+                    await _studentRepository.AddStudentAsync(student);
 
-                    _emailServices.SendEmail(new MessageDto(new List<string> { recipientEmail }, subject, messageBody));
+                    //// Step 5: Send a welcome email
+                    //string subject = "Welcome to Scoreboard Platform!";
+                    //string recipientEmail = user.Email;
+                    //string recipientName = user.Name;
+                    //string companyName = "Promact";
 
+                    //string messageBody = $"Dear {recipientName},<br><br>" +
+                    //    "Welcome to Scoreboard Platform! We're thrilled to have you on board.<br><br>" +
+                    //    "Please login with your Canvas registered email address, and your password will remain the same as the one you provided during registration.<br><br>" +
+                    //    $"Thanks for choosing Scoreboard Platform, brought to you by {companyName}!<br><br>" +
+                    //    "Best regards,<br>" +
+                    //    "The Scoreboard Platform Team";
 
-                    _emailServices.SendEmail(new MessageDto(new List<string> { recipientEmail }, subject, messageBody));
+                    //_emailServices.SendEmail(new MessageDto(new List<string> { recipientEmail }, subject, messageBody));
 
-
-
-
-                    dbContextTransaction.Commit(); // Commit the transaction if all operations were successful
+                    // Step 6: Commit the database transaction if all operations were successful
+                    dbContextTransaction.Commit();
 
                     return student;
                 }
                 catch (Exception ex)
                 {
-                    // Handle the exception or log it as needed
+                    // Step 7: Handle the exception or log it as needed
                     dbContextTransaction.Rollback(); // Rollback the transaction in case of an error
                     var errorObject = new
                     {

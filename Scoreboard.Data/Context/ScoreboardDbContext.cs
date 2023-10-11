@@ -33,6 +33,11 @@ public class ScoreboardDbContext : IdentityDbContext<ScoreboardUser, IdentityRol
                 .WithMany(s => s.Students)
                 .HasForeignKey(s => s.StreamId)
                 .OnDelete(DeleteBehavior.Cascade).IsRequired();
+            b.HasOne(s => s.User)
+            .WithOne()
+            .HasForeignKey<Student>(s => s.Email) // Use Email as the foreign key
+            .HasPrincipalKey<ScoreboardUser>(u => u.UserName) // Use Id as the principal key in ScoreboardUser
+            .IsRequired();
         });
 
         builder.Entity<StreamCourse>(b =>

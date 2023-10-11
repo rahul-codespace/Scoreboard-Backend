@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Scoreboard.Data.Context;
@@ -11,9 +12,11 @@ using Scoreboard.Data.Context;
 namespace Scoreboard.Data.Migrations
 {
     [DbContext(typeof(ScoreboardDbContext))]
-    partial class ScoreboardDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230928083139_Added_Email_In_Student_Model")]
+    partial class Added_Email_In_Student_Model
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -209,18 +212,9 @@ namespace Scoreboard.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("FeedbackPoints")
+                    b.Property<string>("FeedBackPoints")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("FeedbackType")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("InCooperated")
-                        .HasColumnType("boolean");
 
                     b.Property<int>("Rating")
                         .HasColumnType("integer");

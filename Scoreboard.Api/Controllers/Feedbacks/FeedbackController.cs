@@ -31,17 +31,18 @@ namespace Scoreboard.Api.Controllers.Feedbacks
         {
             var user = await _userRepository.GetUser(User.FindFirstValue(ClaimTypes.Email)!);
             var userRole = User.FindFirstValue(ClaimTypes.Role);
-
             var newFeedback = new Feedback
             {
                 Reviewer = userRole,
                 ReviewerName = user.Name,
                 StudentId = feedback.StudentId,
-                FeedBackPoints = feedback.FeedBackPoints,
-                Rating = feedback.Rating
+                FeedbackPoints = feedback.FeedbackPoints,
+                FeedbackType = feedback.FeedbackType,
+                Rating = feedback.Rating,
+                InCooperated = feedback.InCooperated
             };
             var createdFeedback = await _feedbackRepository.CreateFeedbackAsync(newFeedback);
-            _emailServices.SendEmail(new MessageDto(new List<string> { $"{user.Email}" }, "New Feedback", $"New Feedback from {user.Name}: \n {feedback.FeedBackPoints}"));
+            _emailServices.SendEmail(new MessageDto(new List<string> { $"{user.Email}" }, "New Feedback", $"New Feedback from {user.Name}: \n {feedback.FeedbackPoints}"));
             return Ok(createdFeedback);
         }
 

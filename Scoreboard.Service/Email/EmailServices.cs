@@ -19,9 +19,9 @@ namespace Scoreboard.Service.Email
             SendEmail(emailMessage);
         }
 
-        public async void SendEmail(MessageDto email)
+        public async void SendEmail(MessageDto emailDto)
         {
-            var emailMessage = CreateEmailMessage(email);
+            var emailMessage = CreateEmailMessage(emailDto);
             MailSend(emailMessage);
         }
 

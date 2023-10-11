@@ -56,6 +56,7 @@ namespace Scoreboard.Repository.Scoreboards
             {
                 Id = student.Id,
                 Name = student.Name,
+                Email = student.Email,
                 Courses = new List<CoursesDto>()
             };
 
@@ -106,6 +107,7 @@ namespace Scoreboard.Repository.Scoreboards
             {
                 Id = student.Id,
                 Name = student.Name,
+                Email = student.Email,
                 Courses = new List<CoursesDto>()
             };
 
